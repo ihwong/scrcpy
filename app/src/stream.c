@@ -70,11 +70,13 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
       exit(0);
     }
 
+    /*
     for (int i = 0; i < 14; i++) {
       printf("%02x ", rtp_header[i]);
     }
     printf("\n");
-
+    */
+    
     fragment_trace = (fragment_trace << 8) | rtp_header[1]; // previous rtp_header[1] and current rtp_header[1]
     
     /* packet fragment parser */
@@ -112,9 +114,9 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     assert(pts == NO_PTS || (pts & 0x8000000000000000) == 0);
     assert(len);
 
-    LOGI("pts = %lu", pts);
-    LOGI("len = %u", len);
-    LOGI("position = %d", position);
+    // LOGI("pts = %lu", pts);
+    // LOGI("len = %u", len);
+    // LOGI("position = %d", position);
 
     /* dealing with rtp payload! */
 
@@ -132,19 +134,22 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
       packet_size -= 2;
     }
 
+    printf("len = %d, packet_size = %d\n", len, packet_size);
+
     int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
     int writeIndex = frame_size;
 
+    if (position == 0 || position == 1) {
+      frame_data[0] = 0x00;
+      frame_data[1] = 0x00;
+      frame_data[2] = 0x00;
+      frame_data[3] = 0x01;
+      writeIndex = 4;
+      frame_size += 4;
+    }
+    
     if (position != 0) {
       r = net_recv_all(stream->socket, buffer, 2);
-      if (fragment_trace >> 8 == 0) { // if first stream,
-        frame_data[0] = 0x00;
-	frame_data[1] = 0x00;
-	frame_data[2] = 0x00;
-	frame_data[3] = 0x01;
-	writeIndex = 4;
-	frame_size += 4;
-      }
       if (position == 1) { // calculate nalType if 1st packet
 	buffer[0] = (buffer[0] & 0xe0) | (buffer[1] & 0x1f);
         frame_data[writeIndex] = buffer[0];
@@ -187,12 +192,14 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     LOGE("Could not allocate packet");
     return false;
   }
-
+  
   for (uint32_t i = 0; i < frame_size; i++) {
     packet->data[i] = frame_data[i];
     printf("%02x ", frame_data[i]);
   }
   printf("\n");
+  
+  printf("frame_size = %u\n", frame_size);
   
     
     
