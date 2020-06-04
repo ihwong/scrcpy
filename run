@@ -21,4 +21,4 @@ then
 fi
 
 
-SCRCPY_SERVER_PATH="$BUILDDIR/server/scrcpy-server" "$BUILDDIR/app/scrcpy" "$@"
+"$BUILDDIR/app/scrcpy" "$@"

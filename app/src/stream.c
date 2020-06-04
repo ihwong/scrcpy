@@ -30,7 +30,7 @@
 
 #define BUFSIZE 0x10000
 
-#define HEADER_SIZE 128
+#define HEADER_SIZE 14
 #define NO_PTS UINT64_C(-1)
 
 static bool
@@ -47,36 +47,86 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     //
     // It is followed by <packet_size> bytes containing the packet/frame.
 
-  LOGI("HEREHEREHERE!!!");
-  uint8_t header[HEADER_SIZE];
-    ssize_t r = net_recv_all(stream->socket, header, HEADER_SIZE);
-    if (r < HEADER_SIZE) {
-        return false;
+  unsigned char rtp_header[14];
+
+  uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
+  unsigned char position = 0; // 0 full packet, 1 first packet, 2 middle packet, 3 last packet, -1 error
+
+  uint32_t timestamp;
+  unsigned int len;
+
+  // total bytes of each recv()
+  int recv_bytes;
+  
+  // buffer for receiving data
+  unsigned char buffer[4096]; // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
+
+    // parser for RTP header
+    recv_bytes = recv(stream->socket, rtp_header, 14, 0);
+    if (recv_bytes == 0) {
+      printf("connection terminated by server.\n");
+      exit(0);
     }
 
-    for (int i = 0; i < HEADER_SIZE; i++) {
-      LOGI("%2x ", header[i]);
+    for (int i = 0; i < 14; i++) {
+      printf("%02x ", rtp_header[i]);
     }
-    uint64_t pts = buffer_read64be(header);
-    uint32_t len = buffer_read32be(&header[8]);
-    assert(pts == NO_PTS || (pts & 0x8000000000000000) == 0);
+    printf("\n");
+
+    fragment_trace = (fragment_trace << 8) | rtp_header[1]; // previous rtp_header[1] and current rtp_header[1]
+    
+    /* packet fragment parser */
+    // (previous packet, current packet)
+    // 00 61 1st of fragment
+    // 00 e1 full packet
+    // 61 61 middle of fragment
+    // 61 e1 last of fragment
+    // e1 61 1st of fragment
+    // e1 e1 full packet
+
+    switch(fragment_trace) {
+    case 0x00e1: case 0xe1e1: // one full packet
+      position = 0;
+      break;
+    case 0x0061: case 0xe161: // first packet of fragmented data
+      position = 1;
+      break;
+    case 0x6161: // middle packet of fragmented data
+      position = 2;
+      break;
+    case 0x61e1: // last packet of fragmented data
+      position = 3;
+      break;
+    default: // error
+      printf("something's wrong :(\n");
+      position = -1;
+      break;
+    }
+
+    timestamp = (rtp_header[4] << 24) | (rtp_header[5] << 16) | (rtp_header[6] << 8) | (rtp_header[7]);
+    len = (rtp_header[12] << 8 | rtp_header[13]) - 14; // 14 = rtp header
+    
+    // uint64_t pts = buffer_read64be(rtp_header);
+    // uint16_t len = buffer_read16be(&rtp_header[12]) - 14;
+    // assert(pts == NO_PTS || (pts & 0x8000000000000000) == 0);
     assert(len);
 
-    LOGI("pts = %lu", pts);
+    // LOGI("pts = %lu", pts);
     LOGI("len = %u", len);
 
+    
     if (av_new_packet(packet, len)) {
         LOGE("Could not allocate packet");
         return false;
     }
 
-    r = net_recv_all(stream->socket, packet->data, len);
+    ssize_t r = net_recv_all(stream->socket, packet->data, len);
     if (r < 0 || ((uint32_t) r) < len) {
         av_packet_unref(packet);
         return false;
     }
 
-    packet->pts = pts != NO_PTS ? (int64_t) pts : AV_NOPTS_VALUE;
+    // packet->pts = pts != NO_PTS ? (int64_t) pts : AV_NOPTS_VALUE;
 
     return true;
 }

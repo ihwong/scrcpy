@@ -324,10 +324,13 @@ scrcpy(const struct scrcpy_options *options) {
     .codec_options = options->codec_options,
     .force_adb_forward = options->force_adb_forward,
   };
+
+  /*
   if (!server_start(&server, options->serial, &params)) {
     return false;
   }
-
+  */
+  
   bool ret = false;
 
   bool fps_counter_initialized = false;
@@ -398,13 +401,9 @@ scrcpy(const struct scrcpy_options *options) {
   send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0); // 22 = strlen("display:1440.2620.560") + 1 for newline char
   LOGI("display info sent!\n");
 
-
-  /*
-
-  */
   stream_init(&stream, server.video_socket, dec, rec);
 
-    // now we consumed the header values, the socket receives the video stream
+  // now we consumed the header values, the socket receives the video stream
   // start the stream
   if (!stream_start(&stream)) {
     goto end;
