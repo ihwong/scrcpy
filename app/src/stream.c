@@ -33,6 +33,8 @@
 #define HEADER_SIZE 14
 #define NO_PTS UINT64_C(-1)
 
+uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
+
 static bool
 stream_recv_packet(struct stream *stream, AVPacket *packet) {
     // The video stream contains raw packets, without time information. When we
@@ -47,24 +49,20 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     //
     // It is followed by <packet_size> bytes containing the packet/frame.
 
-  unsigned char rtp_header[14];
-
-  uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
+  uint8_t rtp_header[14];
   unsigned char position = 0; // 0 full packet, 1 first packet, 2 middle packet, 3 last packet, -1 error
 
   uint32_t timestamp;
-  unsigned int len;
-
-  // total bytes of each recv()
-  int recv_bytes;
+  uint16_t len;
   
   // buffer for receiving data
-  unsigned char buffer[4096]; // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
+  // unsigned char buffer[4096]; // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
 
     // parser for RTP header
-    recv_bytes = recv(stream->socket, rtp_header, 14, 0);
-    if (recv_bytes == 0) {
+  ssize_t r = net_recv_all(stream->socket, rtp_header, 14);
+    if (r == 0) {
       printf("connection terminated by server.\n");
+      close(stream->socket);
       exit(0);
     }
 
@@ -106,28 +104,84 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     timestamp = (rtp_header[4] << 24) | (rtp_header[5] << 16) | (rtp_header[6] << 8) | (rtp_header[7]);
     len = (rtp_header[12] << 8 | rtp_header[13]) - 14; // 14 = rtp header
     
-    // uint64_t pts = buffer_read64be(rtp_header);
-    // uint16_t len = buffer_read16be(&rtp_header[12]) - 14;
-    // assert(pts == NO_PTS || (pts & 0x8000000000000000) == 0);
+    uint64_t pts = NO_PTS;
+    assert(pts == NO_PTS || (pts & 0x8000000000000000) == 0);
     assert(len);
 
-    // LOGI("pts = %lu", pts);
+    LOGI("pts = %lu", pts);
     LOGI("len = %u", len);
+    LOGI("position = %d", position);
 
+    /* dealing with rtp payload! */
+
+    int packet_size = len;
+    if (fragment_trace >> 8 == 0) {
+      packet_size += 4;
+    }
+    if (position == 1) {
+      packet_size -= 1;
+    }
+
+    if ((position == 2) || (position == 3)) {
+      packet_size -= 2;
+    }
     
-    if (av_new_packet(packet, len)) {
+    if (av_new_packet(packet, packet_size)) {
         LOGE("Could not allocate packet");
         return false;
     }
 
-    ssize_t r = net_recv_all(stream->socket, packet->data, len);
+    int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
+    int writeIndex = 0;
+
+    uint8_t buffer[2048];
+
+    if (position != 0) {
+      r = net_recv_all(stream->socket, buffer, 2);
+      if (fragment_trace >> 8 == 0) { // if first stream,
+        packet->data[0] = 0x00;
+	packet->data[1] = 0x00;
+	packet->data[2] = 0x00;
+	packet->data[3] = 0x01;
+	writeIndex = 4;
+      }
+      if (position == 1) { // calculate nalType if 1st packet
+	buffer[0] = (buffer[0] & 0xe0) | (buffer[1] & 0x1f);
+        packet->data[writeIndex] = buffer[0];
+	writeIndex += 1;
+      }
+      offset = 2;
+    }
+
+    for (int i = offset; i < len; i++) {
+      r = net_recv_all(stream->socket, buffer, 1);
+      if (r == 0) {
+	printf("connection terminated by server.\n");
+	close(stream->socket);
+	exit(0);
+      }
+      packet->data[writeIndex] = buffer[0];
+      writeIndex += 1;
+    }
+    printf("\n");
+
+    // r = net_recv_all(stream->socket, &buffer, len);
+    
+    for (int i = 0; i < packet_size; i++) {
+      printf("%02x ", packet->data[i]);
+    }
+    printf("\n");
+    
+    
+    /*
     if (r < 0 || ((uint32_t) r) < len) {
         av_packet_unref(packet);
         return false;
     }
-
+    */
+    
     // packet->pts = pts != NO_PTS ? (int64_t) pts : AV_NOPTS_VALUE;
-
+    packet->pts = AV_NOPTS_VALUE;
     return true;
 }
 
@@ -167,6 +221,8 @@ process_frame(struct stream *stream, AVPacket *packet) {
 
 static bool
 stream_parse(struct stream *stream, AVPacket *packet) {
+
+  LOGI("stream_parse!!");
     uint8_t *in_data = packet->data;
     int in_len = packet->size;
     uint8_t *out_data = NULL;
@@ -195,7 +251,9 @@ stream_parse(struct stream *stream, AVPacket *packet) {
 
 static bool
 stream_push_packet(struct stream *stream, AVPacket *packet) {
-    bool is_config = packet->pts == AV_NOPTS_VALUE;
+  // bool is_config = packet->pts == AV_NOPTS_VALUE;
+    bool is_config = false;
+    LOGI("stream_push!! 111");
 
     // A config packet must not be decoded immetiately (it contains no
     // frame); instead, it must be concatenated with the future data packet.
@@ -227,13 +285,17 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
         }
     }
 
+    LOGI("stream_push!! 222");
+    
     if (is_config) {
+        LOGI("stream_push!! 333");
         // config packet
         bool ok = process_config_packet(stream, packet);
         if (!ok) {
             return false;
         }
     } else {
+        LOGI("stream_push!! 444");
         // data packet
         bool ok = stream_parse(stream, packet);
 
@@ -247,6 +309,7 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
             return false;
         }
     }
+    LOGI("stream_push!! 555");
     return true;
 }
 
@@ -296,22 +359,22 @@ run_stream(void *data) {
     LOGI("HERE COMES!");
 
     for ( ; ; ) {
-    AVPacket packet;
-    bool ok = stream_recv_packet(stream, &packet);
-    if (!ok) {
-      // end of stream
-      break;
+      AVPacket packet;
+      bool ok = stream_recv_packet(stream, &packet);
+      if (!ok) {
+	// end of stream
+	break;
+      }
+
+      ok = stream_push_packet(stream, &packet);
+      av_packet_unref(&packet);
+      if (!ok) {
+	// cannot process packet (error already logged)
+	break;
+      }
     }
 
-    ok = stream_push_packet(stream, &packet);
-    av_packet_unref(&packet);
-    if (!ok) {
-      // cannot process packet (error already logged)
-      break;
-    }
-    }
-
-    LOGD("End of frames");
+    LOGI("End of frames");
 
     if (stream->has_pending) {
         av_packet_unref(&stream->pending);
