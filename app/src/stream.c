@@ -37,29 +37,33 @@ uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
 
 static bool
 stream_recv_packet(struct stream *stream, AVPacket *packet) {
-    // The video stream contains raw packets, without time information. When we
-    // record, we retrieve the timestamps separately, from a "meta" header
-    // added by the server before each raw packet.
-    //
-    // The "meta" header length is 12 bytes:
-    // [. . . . . . . .|. . . .]. . . . . . . . . . . . . . . ...
-    //  <-------------> <-----> <-----------------------------...
-    //        PTS        packet        raw packet
-    //                    size
-    //
-    // It is followed by <packet_size> bytes containing the packet/frame.
+  // The video stream contains raw packets, without time information. When we
+  // record, we retrieve the timestamps separately, from a "meta" header
+  // added by the server before each raw packet.
+  //
+  // The "meta" header length is 12 bytes:
+  // [. . . . . . . .|. . . .]. . . . . . . . . . . . . . . ...
+  //  <-------------> <-----> <-----------------------------...
+  //        PTS        packet        raw packet
+  //                    size
+  //
+  // It is followed by <packet_size> bytes containing the packet/frame.
 
-  uint8_t rtp_header[14];
-  unsigned char position = 0; // 0 full packet, 1 first packet, 2 middle packet, 3 last packet, -1 error
+  uint32_t frame_size = 0;
+  uint8_t frame_data[1048576] = {0}; // 1MB is (hopefully) enough for one frame
 
-  uint32_t timestamp;
-  uint16_t len;
+  for ( ; ; ) { // processing for one packet
+    uint8_t rtp_header[14];
+    unsigned char position = 0; // 0 full packet, 1 first packet, 2 middle packet, 3 last packet, -1 error
+
+    uint32_t timestamp;
+    uint16_t len;
   
-  // buffer for receiving data
-  // unsigned char buffer[4096]; // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
+    // buffer for receiving data
+    // unsigned char buffer[4096]; // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
 
     // parser for RTP header
-  ssize_t r = net_recv_all(stream->socket, rtp_header, 14);
+    ssize_t r = net_recv_all(stream->socket, rtp_header, 14);
     if (r == 0) {
       printf("connection terminated by server.\n");
       close(stream->socket);
@@ -122,33 +126,30 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
       packet_size -= 1;
     }
 
+    uint8_t buffer[4];
+    
     if ((position == 2) || (position == 3)) {
       packet_size -= 2;
     }
-    
-    if (av_new_packet(packet, packet_size)) {
-        LOGE("Could not allocate packet");
-        return false;
-    }
 
     int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
-    int writeIndex = 0;
-
-    uint8_t buffer[2048];
+    int writeIndex = frame_size;
 
     if (position != 0) {
       r = net_recv_all(stream->socket, buffer, 2);
       if (fragment_trace >> 8 == 0) { // if first stream,
-        packet->data[0] = 0x00;
-	packet->data[1] = 0x00;
-	packet->data[2] = 0x00;
-	packet->data[3] = 0x01;
+        frame_data[0] = 0x00;
+	frame_data[1] = 0x00;
+	frame_data[2] = 0x00;
+	frame_data[3] = 0x01;
 	writeIndex = 4;
+	frame_size += 4;
       }
       if (position == 1) { // calculate nalType if 1st packet
 	buffer[0] = (buffer[0] & 0xe0) | (buffer[1] & 0x1f);
-        packet->data[writeIndex] = buffer[0];
+        frame_data[writeIndex] = buffer[0];
 	writeIndex += 1;
+	frame_size += 1;
       }
       offset = 2;
     }
@@ -160,17 +161,39 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 	close(stream->socket);
 	exit(0);
       }
-      packet->data[writeIndex] = buffer[0];
+      frame_data[writeIndex] = buffer[0];
       writeIndex += 1;
+      frame_size += 1;
     }
-    printf("\n");
 
     // r = net_recv_all(stream->socket, &buffer, len);
-    
-    for (int i = 0; i < packet_size; i++) {
-      printf("%02x ", packet->data[i]);
+
+    if (position == 0 || position == 3) {
+      break;
     }
-    printf("\n");
+
+  } // end of for loop for on packet
+
+  /*
+  if (av_new_packet(packet, packet_size)) {
+    LOGE("Could not allocate packet");
+    return false;
+  }
+  */
+
+
+
+  if (av_new_packet(packet, frame_size)) {
+    LOGE("Could not allocate packet");
+    return false;
+  }
+
+  for (uint32_t i = 0; i < frame_size; i++) {
+    packet->data[i] = frame_data[i];
+    printf("%02x ", frame_data[i]);
+  }
+  printf("\n");
+  
     
     
     /*
@@ -181,8 +204,8 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
     */
     
     // packet->pts = pts != NO_PTS ? (int64_t) pts : AV_NOPTS_VALUE;
-    packet->pts = AV_NOPTS_VALUE;
-    return true;
+  packet->pts = AV_NOPTS_VALUE;
+  return true;
 }
 
 static void
