@@ -35,8 +35,10 @@ to_fixed_point_16(float f) {
     return (uint16_t) u;
 }
 
-size_t
-control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
+// size_t
+unsigned char *
+control_msg_serialize(const struct control_msg *msg, unsigned char *payload) {
+    unsigned char buf[256];
     buf[0] = msg->type;
     switch (msg->type) {
         case CONTROL_MSG_TYPE_INJECT_KEYCODE:
@@ -51,14 +53,54 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             return 1 + len;
         }
         case CONTROL_MSG_TYPE_INJECT_TOUCH_EVENT:
+	  // LOGI("TOUCH_EVENT HERE!");
+	  // LOGI("buf[0] = %u", buf[0]); // always 2
             buf[1] = msg->inject_touch_event.action;
+	    // LOGI("buf[1] = %u", buf[1]); // click 0 release 1 drag 2
+	    // LOGI("pointer_id = %lu", msg->inject_touch_event.pointer_id); // not needed for fluid
             buffer_write64be(&buf[2], msg->inject_touch_event.pointer_id);
             write_position(&buf[10], &msg->inject_touch_event.position);
+	    // LOGI("x position = %d", 256 * buf[12] + buf[13]);
+	    // LOGI("y position = %d", 256 * buf[16] + buf[17]);
+	    
+	    int payload_length = 4; // ; ; 0 \n
+	    uint16_t pos_x = 256 * buf[12] + buf[13];
+	    uint16_t pos_y = 256 * buf[16] + buf[17];
+	    if (pos_x < 10) {
+	      payload_length += 1;
+	    }
+	    else if (pos_x < 100) {
+	      payload_length += 2;
+	    }
+	    else if (pos_x < 1000) {
+	      payload_length += 3;
+	    }
+	    else {
+	      payload_length += 4;
+	    }
+	    if (pos_y < 10) {
+	      payload_length += 1;
+	    }
+	    else if (pos_y < 100) {
+	      payload_length += 2;
+	    }
+	    else if (pos_y < 1000) {
+	      payload_length += 3;
+	    }
+	    else {
+	      payload_length += 4;
+	    }
+
+	    payload = (unsigned char*)malloc(payload_length * sizeof(unsigned char));
+	    sprintf(payload, "%d;%d;%u\n", pos_x, pos_y, buf[1]);
+	    // printf("payload = %s", payload);
+
             uint16_t pressure =
                 to_fixed_point_16(msg->inject_touch_event.pressure);
             buffer_write16be(&buf[22], pressure);
             buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
-            return 28;
+            // return payload_length;// 28;
+	    return payload;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
             write_position(&buf[1], &msg->inject_scroll_event.position);
             buffer_write32be(&buf[13],

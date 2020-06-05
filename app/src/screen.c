@@ -328,17 +328,12 @@ screen_init_rendering(struct screen *screen, const char *window_title,
         return false;
     }
 
-    LOGI("HERE 11");
     // Reset the window size to trigger a SIZE_CHANGED event, to workaround
     // HiDPI issues with some SDL renderers when several displays having
     // different HiDPI scaling are connected
     SDL_SetWindowSize(screen->window, window_size.width, window_size.height);
-
-    LOGI("HERE 22");
     
     // screen_update_content_rect(screen);
-
-    LOGI("HERE 33");
     
     return true;
 }
@@ -480,19 +475,13 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb) {
 
 void
 screen_render(struct screen *screen, bool update_content_rect) {
-  LOGI("screen_render 111");
     if (update_content_rect) {
-        LOGI("screen_render 222");
         screen_update_content_rect(screen);
     }
-    LOGI("screen_render 333");
     SDL_RenderClear(screen->renderer);
-    LOGI("screen_render 444");
     if (screen->rotation == 0) {
-        LOGI("screen_render 555");
         SDL_RenderCopy(screen->renderer, screen->texture, NULL, &screen->rect);
     } else {
-        LOGI("screen_render 666");
         // rotation in RenderCopyEx() is clockwise, while screen->rotation is
         // counterclockwise (to be consistent with --lock-video-orientation)
         int cw_rotation = (4 - screen->rotation) % 4;
@@ -501,22 +490,18 @@ screen_render(struct screen *screen, bool update_content_rect) {
         SDL_Rect *dstrect = NULL;
         SDL_Rect rect;
         if (screen->rotation & 1) {
-	    LOGI("screen_render 777");
             rect.x = screen->rect.x + (screen->rect.w - screen->rect.h) / 2;
             rect.y = screen->rect.y + (screen->rect.h - screen->rect.w) / 2;
             rect.w = screen->rect.h;
             rect.h = screen->rect.w;
             dstrect = &rect;
         } else {
-	    LOGI("screen_render 888");
             assert(screen->rotation == 2);
             dstrect = &screen->rect;
         }
-	LOGI("screen_render 999");
         SDL_RenderCopyEx(screen->renderer, screen->texture, NULL, dstrect,
                          angle, NULL, 0);
     }
-      LOGI("screen_render aaa");
     SDL_RenderPresent(screen->renderer);
 }
 
@@ -570,22 +555,17 @@ screen_resize_to_pixel_perfect(struct screen *screen) {
 void
 screen_handle_window_event(struct screen *screen,
                            const SDL_WindowEvent *event) {
-  LOGI("HERE COMES THE SCREEN!");
     switch (event->event) {
         case SDL_WINDOWEVENT_EXPOSED:
-	    LOGI("HERE COMES THE SCREEN! 11");
             screen_render(screen, true);
             break;
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-	    LOGI("HERE COMES THE SCREEN! 222");
             screen_render(screen, true);
             break;
         case SDL_WINDOWEVENT_MAXIMIZED:
-	    LOGI("HERE COMES THE SCREEN! 333");
             screen->maximized = true;
             break;
         case SDL_WINDOWEVENT_RESTORED:
-	    LOGI("HERE COMES THE SCREEN! 444");
             if (screen->fullscreen) {
                 // On Windows, in maximized+fullscreen, disabling fullscreen
                 // mode unexpectedly triggers the "restored" then "maximized"

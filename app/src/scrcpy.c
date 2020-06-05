@@ -53,6 +53,7 @@ static struct video_buffer video_buffer;
 static struct stream stream;
 static struct decoder decoder;
 static struct recorder recorder;
+
 static struct controller controller;
 static struct file_handler file_handler;
 
@@ -170,30 +171,15 @@ enum event_result {
 
 static enum event_result
 handle_event(SDL_Event *event, bool control) {
-  LOGI("handle_event 11");
-  printf("event->type = %u\n", event->type);
-  printf("event->type = %u\n", EVENT_NEW_FRAME);
-  printf("event->type = %u\n", EVENT_STREAM_STOPPED);
-  printf("event->type = %u\n", SDL_QUIT);
-  printf("event->type = %u\n", SDL_WINDOWEVENT);
-  printf("event->type = %u\n", SDL_TEXTINPUT);
-  printf("event->type = %u\n", SDL_KEYDOWN);
-  printf("event->type = %u\n", SDL_DROPFILE);
-  printf("event->type = %u\n", event->type);
-  printf("event->type = %u\n", event->type);
-  printf("event->type = %u\n", event->type);
 		      
   switch (event->type) {
   case EVENT_STREAM_STOPPED:
-    LOGI("handle_event stream_stopped");
     LOGD("Video stream stopped");
     return EVENT_RESULT_STOPPED_BY_EOS;
   case SDL_QUIT:
-    LOGI("handle event here");
     LOGD("User requested to quit");
     return EVENT_RESULT_STOPPED_BY_USER;
   case EVENT_NEW_FRAME:
-    LOGI("handle_event 33");
     if (!screen.has_frame) {
       screen.has_frame = true;
       // this is the very first frame, show the window
@@ -204,7 +190,6 @@ handle_event(SDL_Event *event, bool control) {
     }
     break;
   case SDL_WINDOWEVENT:
-    LOGI("BREAKDOWN :(");
     screen_handle_window_event(&screen, &event->window);
     break;
   case SDL_TEXTINPUT:
@@ -262,19 +247,15 @@ handle_event(SDL_Event *event, bool control) {
 
 static bool
 event_loop(bool display, bool control) {
-  LOGI("event_loop 11");
   (void) display;
 #ifdef CONTINUOUS_RESIZING_WORKAROUND
   if (display) {
     SDL_AddEventWatch(event_watcher, NULL);
   }
 #endif
-  LOGI("event_loop 22");
   SDL_Event event;
   while (SDL_WaitEvent(&event)) {
-    LOGI("event_loop 33");
     enum event_result result = handle_event(&event, control);
-    LOGI("event_loop 333");
     switch (result) {
     case EVENT_RESULT_STOPPED_BY_USER:
       return true;
@@ -285,7 +266,6 @@ event_loop(bool display, bool control) {
       break;
     }
   }
-  LOGI("event_loop 44");
   return false;
 }
 
@@ -439,11 +419,12 @@ scrcpy(const struct scrcpy_options *options) {
 
   if (options->display) {
     if (options->control) {
+      LOGI("controller_init");
       if (!controller_init(&controller, server.control_socket)) {
 	goto end;
       }
       controller_initialized = true;
-
+      LOGI("controller_start");
       if (!controller_start(&controller)) {
 	goto end;
       }
@@ -469,7 +450,7 @@ scrcpy(const struct scrcpy_options *options) {
       struct control_msg msg;
       msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
       msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
-
+      LOGI("controller_push_msg");
       if (!controller_push_msg(&controller, &msg)) {
 	LOGW("Could not request 'set screen power mode'");
       }

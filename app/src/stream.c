@@ -214,29 +214,22 @@ process_config_packet(struct stream *stream, AVPacket *packet) {
 
 static bool
 process_frame(struct stream *stream, AVPacket *packet) {
-  LOGI("process_frame aa");
     if (stream->decoder && !decoder_push(stream->decoder, packet)) {
-        LOGI("process_frame bb");
         return false;
     }
-  LOGI("process_frame cc");
     if (stream->recorder) {
-        LOGI("process_frame dd");
         packet->dts = packet->pts;
 
         if (!recorder_push(stream->recorder, packet)) {
-	    LOGI("process_frame ee");
             LOGE("Could not send packet to recorder");
             return false;
         }
     }
-  LOGI("process_frame ff");
     return true;
 }
 
 static bool
 stream_parse(struct stream *stream, AVPacket *packet) {
-    LOGI("stream_parse 111");
     uint8_t *in_data = packet->data;
     int in_len = packet->size;
     uint8_t *out_data = NULL;
@@ -244,12 +237,10 @@ stream_parse(struct stream *stream, AVPacket *packet) {
     int r = av_parser_parse2(stream->parser, stream->codec_ctx,
                              &out_data, &out_len, in_data, in_len,
                              AV_NOPTS_VALUE, AV_NOPTS_VALUE, -1);
-    LOGI("stream_parse 222");
     // PARSER_FLAG_COMPLETE_FRAMES is set
     assert(r == in_len);
     (void) r;
     assert(out_len == in_len);
-    LOGI("stream_parse 333");
     
     if (stream->parser->key_frame == 1) {
         packet->flags |= AV_PKT_FLAG_KEY;
@@ -257,7 +248,6 @@ stream_parse(struct stream *stream, AVPacket *packet) {
 
     bool ok = process_frame(stream, packet);
 
-    LOGI("stream_parse 444");
     
     if (!ok) {
         LOGE("Could not process frame");
@@ -271,8 +261,6 @@ static bool
 stream_push_packet(struct stream *stream, AVPacket *packet) {
   // bool is_config = packet->pts == AV_NOPTS_VALUE;
     bool is_config = false;
-
-    LOGI("HERE stream_push_packet 111");
 
     // A config packet must not be decoded immetiately (it contains no
     // frame); instead, it must be concatenated with the future data packet.
@@ -319,7 +307,6 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
         }
     } else {
         // data packet
-        LOGI("HERE stream_push_packet aaa");
         bool ok = stream_parse(stream, packet);
 
         if (stream->has_pending) {
@@ -334,7 +321,6 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
             return false;
         }
     }
-    LOGI("HERE stream_push_packet ddd");
     return true;
 }
 
