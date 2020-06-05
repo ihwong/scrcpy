@@ -32,19 +32,8 @@
 #include "util/log.h"
 #include "util/net.h"
 
-/* fluid */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-
-#include <fcntl.h>
-/* fluid */
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
@@ -53,84 +42,83 @@ static struct video_buffer video_buffer;
 static struct stream stream;
 static struct decoder decoder;
 static struct recorder recorder;
-
 static struct controller controller;
 static struct file_handler file_handler;
 
 static struct input_manager input_manager = {
-  .controller = &controller,
-  .video_buffer = &video_buffer,
-  .screen = &screen,
-  .prefer_text = false, // initialized later
+    .controller = &controller,
+    .video_buffer = &video_buffer,
+    .screen = &screen,
+    .prefer_text = false, // initialized later
 };
 
 #ifdef _WIN32
 BOOL WINAPI windows_ctrl_handler(DWORD ctrl_type) {
-  if (ctrl_type == CTRL_C_EVENT) {
-    SDL_Event event;
-    event.type = SDL_QUIT;
-    SDL_PushEvent(&event);
-    return TRUE;
-  }
-  return FALSE;
+    if (ctrl_type == CTRL_C_EVENT) {
+        SDL_Event event;
+        event.type = SDL_QUIT;
+        SDL_PushEvent(&event);
+        return TRUE;
+    }
+    return FALSE;
 }
 #endif // _WIN32
 
 // init SDL and set appropriate hints
 static bool
 sdl_init_and_configure(bool display, const char *render_driver) {
-  uint32_t flags = display ? SDL_INIT_VIDEO : SDL_INIT_EVENTS;
-  if (SDL_Init(flags)) {
-    LOGC("Could not initialize SDL: %s", SDL_GetError());
-    return false;
-  }
+    uint32_t flags = display ? SDL_INIT_VIDEO : SDL_INIT_EVENTS;
+    if (SDL_Init(flags)) {
+        LOGC("Could not initialize SDL: %s", SDL_GetError());
+        return false;
+    }
 
-  atexit(SDL_Quit);
+    atexit(SDL_Quit);
 
 #ifdef _WIN32
-  // Clean up properly on Ctrl+C on Windows
-  bool ok = SetConsoleCtrlHandler(windows_ctrl_handler, TRUE);
-  if (!ok) {
-    LOGW("Could not set Ctrl+C handler");
-  }
+    // Clean up properly on Ctrl+C on Windows
+    bool ok = SetConsoleCtrlHandler(windows_ctrl_handler, TRUE);
+    if (!ok) {
+        LOGW("Could not set Ctrl+C handler");
+    }
 #endif // _WIN32
 
-  if (!display) {
-    return true;
-  }
+    if (!display) {
+        return true;
+    }
 
-  if (render_driver && !SDL_SetHint(SDL_HINT_RENDER_DRIVER, render_driver)) {
-    LOGW("Could not set render driver");
-  }
+    if (render_driver && !SDL_SetHint(SDL_HINT_RENDER_DRIVER, render_driver)) {
+        LOGW("Could not set render driver");
+    }
 
-  // Linear filtering
-  if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
-    LOGW("Could not enable linear filtering");
-  }
+    // Linear filtering
+    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
+        LOGW("Could not enable linear filtering");
+    }
 
 #ifdef SCRCPY_SDL_HAS_HINT_MOUSE_FOCUS_CLICKTHROUGH
-  // Handle a click to gain focus as any other click
-  if (!SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1")) {
-    LOGW("Could not enable mouse focus clickthrough");
-  }
+    // Handle a click to gain focus as any other click
+    if (!SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1")) {
+        LOGW("Could not enable mouse focus clickthrough");
+    }
 #endif
 
 #ifdef SCRCPY_SDL_HAS_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
-  // Disable compositor bypassing on X11
-  if (!SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0")) {
-    LOGW("Could not disable X11 compositor bypass");
-  }
+    // Disable compositor bypassing on X11
+    if (!SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0")) {
+        LOGW("Could not disable X11 compositor bypass");
+    }
 #endif
 
-  // Do not minimize on focus loss
-  if (!SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0")) {
-    LOGW("Could not disable minimize on focus loss");
-  }
+    // Do not minimize on focus loss
+    if (!SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0")) {
+        LOGW("Could not disable minimize on focus loss");
+    }
 
-  // Do not disable the screensaver when scrcpy is running
-  SDL_EnableScreenSaver();
+    // Do not disable the screensaver when scrcpy is running
+    SDL_EnableScreenSaver();
 
-  return true;
+    return true;
 }
 
 
@@ -146,371 +134,369 @@ sdl_init_and_configure(bool display, const char *render_driver) {
 // <https://stackoverflow.com/a/40693139/1987178>
 static int
 event_watcher(void *data, SDL_Event *event) {
-  (void) data;
-  if (event->type == SDL_WINDOWEVENT
-      && event->window.event == SDL_WINDOWEVENT_RESIZED) {
-    // In practice, it seems to always be called from the same thread in
-    // that specific case. Anyway, it's just a workaround.
-    screen_render(&screen, true);
-  }
-  return 0;
+    (void) data;
+    if (event->type == SDL_WINDOWEVENT
+            && event->window.event == SDL_WINDOWEVENT_RESIZED) {
+        // In practice, it seems to always be called from the same thread in
+        // that specific case. Anyway, it's just a workaround.
+        screen_render(&screen, true);
+    }
+    return 0;
 }
 #endif
 
 static bool
 is_apk(const char *file) {
-  const char *ext = strrchr(file, '.');
-  return ext && !strcmp(ext, ".apk");
+    const char *ext = strrchr(file, '.');
+    return ext && !strcmp(ext, ".apk");
 }
 
 enum event_result {
-  EVENT_RESULT_CONTINUE,
-  EVENT_RESULT_STOPPED_BY_USER,
-  EVENT_RESULT_STOPPED_BY_EOS,
+    EVENT_RESULT_CONTINUE,
+    EVENT_RESULT_STOPPED_BY_USER,
+    EVENT_RESULT_STOPPED_BY_EOS,
 };
 
 static enum event_result
 handle_event(SDL_Event *event, bool control) {
-		      
-  switch (event->type) {
-  case EVENT_STREAM_STOPPED:
-    LOGD("Video stream stopped");
-    return EVENT_RESULT_STOPPED_BY_EOS;
-  case SDL_QUIT:
-    LOGD("User requested to quit");
-    return EVENT_RESULT_STOPPED_BY_USER;
-  case EVENT_NEW_FRAME:
-    if (!screen.has_frame) {
-      screen.has_frame = true;
-      // this is the very first frame, show the window
-      screen_show_window(&screen);
+    switch (event->type) {
+        case EVENT_STREAM_STOPPED:
+            LOGD("Video stream stopped");
+            return EVENT_RESULT_STOPPED_BY_EOS;
+        case SDL_QUIT:
+            LOGD("User requested to quit");
+            return EVENT_RESULT_STOPPED_BY_USER;
+        case EVENT_NEW_FRAME:
+            if (!screen.has_frame) {
+                screen.has_frame = true;
+                // this is the very first frame, show the window
+                screen_show_window(&screen);
+            }
+            if (!screen_update_frame(&screen, &video_buffer)) {
+                return EVENT_RESULT_CONTINUE;
+            }
+            break;
+        case SDL_WINDOWEVENT:
+            screen_handle_window_event(&screen, &event->window);
+            break;
+        case SDL_TEXTINPUT:
+            if (!control) {
+                break;
+            }
+            input_manager_process_text_input(&input_manager, &event->text);
+            break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            // some key events do not interact with the device, so process the
+            // event even if control is disabled
+            input_manager_process_key(&input_manager, &event->key, control);
+            break;
+        case SDL_MOUSEMOTION:
+            if (!control) {
+                break;
+            }
+            input_manager_process_mouse_motion(&input_manager, &event->motion);
+            break;
+        case SDL_MOUSEWHEEL:
+            if (!control) {
+                break;
+            }
+            input_manager_process_mouse_wheel(&input_manager, &event->wheel);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+            // some mouse events do not interact with the device, so process
+            // the event even if control is disabled
+            input_manager_process_mouse_button(&input_manager, &event->button,
+                                               control);
+            break;
+        case SDL_FINGERMOTION:
+        case SDL_FINGERDOWN:
+        case SDL_FINGERUP:
+            input_manager_process_touch(&input_manager, &event->tfinger);
+            break;
+        case SDL_DROPFILE: {
+            if (!control) {
+                break;
+            }
+            file_handler_action_t action;
+            if (is_apk(event->drop.file)) {
+                action = ACTION_INSTALL_APK;
+            } else {
+                action = ACTION_PUSH_FILE;
+            }
+            file_handler_request(&file_handler, action, event->drop.file);
+            break;
+        }
     }
-    if (!screen_update_frame(&screen, &video_buffer)) {
-      return EVENT_RESULT_CONTINUE;
-    }
-    break;
-  case SDL_WINDOWEVENT:
-    screen_handle_window_event(&screen, &event->window);
-    break;
-  case SDL_TEXTINPUT:
-    if (!control) {
-      break;
-    }
-    input_manager_process_text_input(&input_manager, &event->text);
-    break;
-  case SDL_KEYDOWN:
-  case SDL_KEYUP:
-    // some key events do not interact with the device, so process the
-    // event even if control is disabled
-    input_manager_process_key(&input_manager, &event->key, control);
-    break;
-  case SDL_MOUSEMOTION:
-    if (!control) {
-      break;
-    }
-    input_manager_process_mouse_motion(&input_manager, &event->motion);
-    break;
-  case SDL_MOUSEWHEEL:
-    if (!control) {
-      break;
-    }
-    input_manager_process_mouse_wheel(&input_manager, &event->wheel);
-    break;
-  case SDL_MOUSEBUTTONDOWN:
-  case SDL_MOUSEBUTTONUP:
-    // some mouse events do not interact with the device, so process
-    // the event even if control is disabled
-    input_manager_process_mouse_button(&input_manager, &event->button,
-				       control);
-    break;
-  case SDL_FINGERMOTION:
-  case SDL_FINGERDOWN:
-  case SDL_FINGERUP:
-    input_manager_process_touch(&input_manager, &event->tfinger);
-    break;
-  case SDL_DROPFILE: {
-    if (!control) {
-      break;
-    }
-    file_handler_action_t action;
-    if (is_apk(event->drop.file)) {
-      action = ACTION_INSTALL_APK;
-    } else {
-      action = ACTION_PUSH_FILE;
-    }
-    file_handler_request(&file_handler, action, event->drop.file);
-    break;
-  }
-  }
-  return EVENT_RESULT_CONTINUE;
+    return EVENT_RESULT_CONTINUE;
 }
 
 static bool
 event_loop(bool display, bool control) {
-  (void) display;
+    (void) display;
 #ifdef CONTINUOUS_RESIZING_WORKAROUND
-  if (display) {
-    SDL_AddEventWatch(event_watcher, NULL);
-  }
-#endif
-  SDL_Event event;
-  while (SDL_WaitEvent(&event)) {
-    enum event_result result = handle_event(&event, control);
-    switch (result) {
-    case EVENT_RESULT_STOPPED_BY_USER:
-      return true;
-    case EVENT_RESULT_STOPPED_BY_EOS:
-      LOGW("Device disconnected");
-      return false;
-    case EVENT_RESULT_CONTINUE:
-      break;
+    if (display) {
+        SDL_AddEventWatch(event_watcher, NULL);
     }
-  }
-  return false;
+#endif
+    SDL_Event event;
+    while (SDL_WaitEvent(&event)) {
+        enum event_result result = handle_event(&event, control);
+        switch (result) {
+            case EVENT_RESULT_STOPPED_BY_USER:
+                return true;
+            case EVENT_RESULT_STOPPED_BY_EOS:
+                LOGW("Device disconnected");
+                return false;
+            case EVENT_RESULT_CONTINUE:
+                break;
+        }
+    }
+    return false;
 }
 
 static SDL_LogPriority
 sdl_priority_from_av_level(int level) {
-  switch (level) {
-  case AV_LOG_PANIC:
-  case AV_LOG_FATAL:
-    return SDL_LOG_PRIORITY_CRITICAL;
-  case AV_LOG_ERROR:
-    return SDL_LOG_PRIORITY_ERROR;
-  case AV_LOG_WARNING:
-    return SDL_LOG_PRIORITY_WARN;
-  case AV_LOG_INFO:
-    return SDL_LOG_PRIORITY_INFO;
-  }
-  // do not forward others, which are too verbose
-  return 0;
+    switch (level) {
+        case AV_LOG_PANIC:
+        case AV_LOG_FATAL:
+            return SDL_LOG_PRIORITY_CRITICAL;
+        case AV_LOG_ERROR:
+            return SDL_LOG_PRIORITY_ERROR;
+        case AV_LOG_WARNING:
+            return SDL_LOG_PRIORITY_WARN;
+        case AV_LOG_INFO:
+            return SDL_LOG_PRIORITY_INFO;
+    }
+    // do not forward others, which are too verbose
+    return 0;
 }
 
 static void
 av_log_callback(void *avcl, int level, const char *fmt, va_list vl) {
-  (void) avcl;
-  SDL_LogPriority priority = sdl_priority_from_av_level(level);
-  if (priority == 0) {
-    return;
-  }
-  char *local_fmt = SDL_malloc(strlen(fmt) + 10);
-  if (!local_fmt) {
-    LOGC("Could not allocate string");
-    return;
-  }
-  // strcpy is safe here, the destination is large enough
-  strcpy(local_fmt, "[FFmpeg] ");
-  strcpy(local_fmt + 9, fmt);
-  SDL_LogMessageV(SDL_LOG_CATEGORY_VIDEO, priority, local_fmt, vl);
-  SDL_free(local_fmt);
+    (void) avcl;
+    SDL_LogPriority priority = sdl_priority_from_av_level(level);
+    if (priority == 0) {
+        return;
+    }
+    char *local_fmt = SDL_malloc(strlen(fmt) + 10);
+    if (!local_fmt) {
+        LOGC("Could not allocate string");
+        return;
+    }
+    // strcpy is safe here, the destination is large enough
+    strcpy(local_fmt, "[FFmpeg] ");
+    strcpy(local_fmt + 9, fmt);
+    SDL_LogMessageV(SDL_LOG_CATEGORY_VIDEO, priority, local_fmt, vl);
+    SDL_free(local_fmt);
 }
 
 bool
 scrcpy(const struct scrcpy_options *options) {
-  bool record = !!options->record_filename;
-  struct server_params params = {
-    .log_level = options->log_level,
-    .crop = options->crop,
-    .port_range = options->port_range,
-    .max_size = options->max_size,
-    .bit_rate = options->bit_rate,
-    .max_fps = options->max_fps,
-    .lock_video_orientation = options->lock_video_orientation,
-    .control = options->control,
-    .display_id = options->display_id,
-    .show_touches = options->show_touches,
-    .stay_awake = options->stay_awake,
-    .codec_options = options->codec_options,
-    .force_adb_forward = options->force_adb_forward,
-  };
-
-  /*
-  if (!server_start(&server, options->serial, &params)) {
-    return false;
-  }
-  */
-  
-  bool ret = false;
-
-  bool fps_counter_initialized = false;
-  bool video_buffer_initialized = false;
-  bool file_handler_initialized = false;
-  bool recorder_initialized = false;
-  bool stream_started = false;
-  bool controller_initialized = false;
-  bool controller_started = false;
-
-  if (!sdl_init_and_configure(options->display, options->render_driver)) {
-    goto end;
-  }
-
-  if (!server_connect_to(&server)) {
-    goto end;
-  }
-
-  char device_name[DEVICE_NAME_FIELD_LENGTH];
-  struct size frame_size;
-
-  // screenrecord does not send frames when the screen content does not
-  // change therefore, we transmit the screen size before the video stream,
-  // to be able to init the window immediately
-
-  struct decoder *dec = NULL;
-  if (options->display) {
-    if (!fps_counter_init(&fps_counter)) {
-      goto end;
+    bool record = !!options->record_filename;
+    struct server_params params = {
+        .log_level = options->log_level,
+        .crop = options->crop,
+        .port_range = options->port_range,
+        .max_size = options->max_size,
+        .bit_rate = options->bit_rate,
+        .max_fps = options->max_fps,
+        .lock_video_orientation = options->lock_video_orientation,
+        .control = options->control,
+        .display_id = options->display_id,
+        .show_touches = options->show_touches,
+        .stay_awake = options->stay_awake,
+        .codec_options = options->codec_options,
+        .force_adb_forward = options->force_adb_forward,
+    };
+    /*
+    if (!server_start(&server, options->serial, &params)) {
+        return false;
     }
-    fps_counter_initialized = true;
+    */
+    bool ret = false;
 
-    if (!video_buffer_init(&video_buffer, &fps_counter,
-			   options->render_expired_frames)) {
-      goto end;
-    }
-    video_buffer_initialized = true;
+    bool fps_counter_initialized = false;
+    bool video_buffer_initialized = false;
+    bool file_handler_initialized = false;
+    bool recorder_initialized = false;
+    bool stream_started = false;
+    bool controller_initialized = false;
+    bool controller_started = false;
 
-    if (options->control) {
-      if (!file_handler_init(&file_handler, server.serial,
-			     options->push_target)) {
-	goto end;
-      }
-      file_handler_initialized = true;
+    if (!sdl_init_and_configure(options->display, options->render_driver)) {
+        goto end;
     }
 
-    decoder_init(&decoder, &video_buffer);
-    dec = &decoder;
-  }
-
-  struct recorder *rec = NULL;
-  if (record) {
-    if (!recorder_init(&recorder,
-		       options->record_filename,
-		       options->record_format,
-		       frame_size)) {
-      goto end;
+    if (!server_connect_to(&server)) {
+        goto end;
     }
-    rec = &recorder;
-    recorder_initialized = true;
-  }
-    
-  av_log_set_callback(av_log_callback);
 
-  LOGI("sending display info...\n");
-  send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0); // 22 = strlen("display:1440.2620.560") + 1 for newline char
-  LOGI("display info sent!\n");
+    char device_name[DEVICE_NAME_FIELD_LENGTH];
+    struct size frame_size;
 
-  stream_init(&stream, server.video_socket, dec, rec);
-
-  // now we consumed the header values, the socket receives the video stream
-  // start the stream
-  if (!stream_start(&stream)) {
-    goto end;
-  }
-  stream_started = true;
-
-  /*
+    // screenrecord does not send frames when the screen content does not
+    // change therefore, we transmit the screen size before the video stream,
+    // to be able to init the window immediately
+    /*
     if (!device_read_info(server.video_socket, device_name, &frame_size)) {
-    goto end;
+        goto end;
     }
-  */
+    */
+    struct decoder *dec = NULL;
+    if (options->display) {
+        if (!fps_counter_init(&fps_counter)) {
+            goto end;
+        }
+        fps_counter_initialized = true;
 
-  if (options->display) {
-    if (options->control) {
-      if (!controller_init(&controller, server.control_socket)) {
-	goto end;
-      }
-      controller_initialized = true;
-      if (!controller_start(&controller)) {
-	goto end;
-      }
-      controller_started = true;
-    }
+        if (!video_buffer_init(&video_buffer, &fps_counter,
+                               options->render_expired_frames)) {
+            goto end;
+        }
+        video_buffer_initialized = true;
 
-    const char *window_title =
-      options->window_title ? options->window_title : device_name;
+        if (options->control) {
+            if (!file_handler_init(&file_handler, server.serial,
+                                   options->push_target)) {
+                goto end;
+            }
+            file_handler_initialized = true;
+        }
 
-    frame_size.width = 1440;
-    frame_size.height = 2620;
-    
-    if (!screen_init_rendering(&screen, window_title, frame_size,
-			       options->always_on_top, options->window_x,
-			       options->window_y, options->window_width,
-			       options->window_height,
-			       options->window_borderless,
-			       options->rotation, options-> mipmaps)) {
-      goto end;
+        decoder_init(&decoder, &video_buffer);
+        dec = &decoder;
     }
 
-    if (options->turn_screen_off) {
-      struct control_msg msg;
-      msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
-      msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
-      if (!controller_push_msg(&controller, &msg)) {
-	LOGW("Could not request 'set screen power mode'");
-      }
+    struct recorder *rec = NULL;
+    if (record) {
+        if (!recorder_init(&recorder,
+                           options->record_filename,
+                           options->record_format,
+                           frame_size)) {
+            goto end;
+        }
+        rec = &recorder;
+        recorder_initialized = true;
     }
 
-    if (options->fullscreen) {
-      screen_switch_fullscreen(&screen);
+    av_log_set_callback(av_log_callback);
+
+    LOGI("sending display info...\n");
+    send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0);
+    // 22 = strlen("display:1440.2620.560") + 1 for newline char
+    LOGI("display info sent!\n");
+
+    stream_init(&stream, server.video_socket, dec, rec);
+
+    // now we consumed the header values, the socket receives the video stream
+    // start the stream
+    if (!stream_start(&stream)) {
+        goto end;
     }
-  }
+    stream_started = true;
 
-  input_manager.prefer_text = options->prefer_text;
+    if (options->display) {
+        if (options->control) {
+            if (!controller_init(&controller, server.control_socket)) {
+                goto end;
+            }
+            controller_initialized = true;
 
-  ret = event_loop(options->display, options->control);
-  LOGD("quit...");
+            if (!controller_start(&controller)) {
+                goto end;
+            }
+            controller_started = true;
+        }
 
-  screen_destroy(&screen);
+        const char *window_title =
+            options->window_title ? options->window_title : device_name;
 
- end:
-  // stop stream and controller so that they don't continue once their socket
-  // is shutdown
-  if (stream_started) {
-    stream_stop(&stream);
-  }
-  if (controller_started) {
-    controller_stop(&controller);
-  }
-  if (file_handler_initialized) {
-    file_handler_stop(&file_handler);
-  }
-  if (fps_counter_initialized) {
-    fps_counter_interrupt(&fps_counter);
-  }
+        frame_size.width = 1440;
+        frame_size.height = 2620;
 
-  // shutdown the sockets and kill the server
-  server_stop(&server);
+        if (!screen_init_rendering(&screen, window_title, frame_size,
+                                   options->always_on_top, options->window_x,
+                                   options->window_y, options->window_width,
+                                   options->window_height,
+                                   options->window_borderless,
+                                   options->rotation, options-> mipmaps)) {
+            goto end;
+        }
 
-  // now that the sockets are shutdown, the stream and controller are
-  // interrupted, we can join them
-  if (stream_started) {
-    stream_join(&stream);
-  }
-  if (controller_started) {
-    controller_join(&controller);
-  }
-  if (controller_initialized) {
-    controller_destroy(&controller);
-  }
+        if (options->turn_screen_off) {
+            struct control_msg msg;
+            msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
+            msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
 
-  if (recorder_initialized) {
-    recorder_destroy(&recorder);
-  }
+            if (!controller_push_msg(&controller, &msg)) {
+                LOGW("Could not request 'set screen power mode'");
+            }
+        }
 
-  if (file_handler_initialized) {
-    file_handler_join(&file_handler);
-    file_handler_destroy(&file_handler);
-  }
+        if (options->fullscreen) {
+            screen_switch_fullscreen(&screen);
+        }
+    }
 
-  if (video_buffer_initialized) {
-    video_buffer_destroy(&video_buffer);
-  }
+    input_manager.prefer_text = options->prefer_text;
 
-  if (fps_counter_initialized) {
-    fps_counter_join(&fps_counter);
-    fps_counter_destroy(&fps_counter);
-  }
+    ret = event_loop(options->display, options->control);
+    LOGD("quit...");
 
-  server_destroy(&server);
+    screen_destroy(&screen);
 
-  return ret;
+end:
+    // stop stream and controller so that they don't continue once their socket
+    // is shutdown
+    if (stream_started) {
+        stream_stop(&stream);
+    }
+    if (controller_started) {
+        controller_stop(&controller);
+    }
+    if (file_handler_initialized) {
+        file_handler_stop(&file_handler);
+    }
+    if (fps_counter_initialized) {
+        fps_counter_interrupt(&fps_counter);
+    }
+
+    // shutdown the sockets and kill the server
+    server_stop(&server);
+
+    // now that the sockets are shutdown, the stream and controller are
+    // interrupted, we can join them
+    if (stream_started) {
+        stream_join(&stream);
+    }
+    if (controller_started) {
+        controller_join(&controller);
+    }
+    if (controller_initialized) {
+        controller_destroy(&controller);
+    }
+
+    if (recorder_initialized) {
+        recorder_destroy(&recorder);
+    }
+
+    if (file_handler_initialized) {
+        file_handler_join(&file_handler);
+        file_handler_destroy(&file_handler);
+    }
+
+    if (video_buffer_initialized) {
+        video_buffer_destroy(&video_buffer);
+    }
+
+    if (fps_counter_initialized) {
+        fps_counter_join(&fps_counter);
+        fps_counter_destroy(&fps_counter);
+    }
+
+    server_destroy(&server);
+
+    return ret;
 }
