@@ -54,7 +54,12 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buf[1] = msg->inject_touch_event.action;
             buffer_write64be(&buf[2], msg->inject_touch_event.pointer_id);
             write_position(&buf[10], &msg->inject_touch_event.position);
+            uint16_t pressure =
+                to_fixed_point_16(msg->inject_touch_event.pressure);
+            buffer_write16be(&buf[22], pressure);
+            buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
 	    
+	    uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
 	    int payload_length = 4; // ; ; 0 \n
 	    uint16_t pos_x = (buf[12] << 8) | buf[13];
 	    uint16_t pos_y = (buf[16] << 8) | buf[17];
@@ -82,16 +87,8 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    else {
 	      payload_length += 4;
 	    }
-	    uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
-
-	    // payload = (unsigned char*)malloc(payload_length * sizeof(unsigned char));
 	    sprintf(buf, "%d;%d;%u\n", pos_x, pos_y, status);
 	    printf("payload = %s", buf);
-
-            uint16_t pressure =
-                to_fixed_point_16(msg->inject_touch_event.pressure);
-            buffer_write16be(&buf[22], pressure);
-            buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
             return payload_length;// 28;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
             write_position(&buf[1], &msg->inject_scroll_event.position);
