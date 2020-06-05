@@ -78,6 +78,24 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 
 	/* dealing with rtp payload! */
 
+	/* some explanation... 
+	   if one frame data fits into one packet, payload itself is a frame data
+	   if one frame data is fragmented into several packets,
+	   1. first packet : first two bytes of payload represent the nalType and this will be the first byte of actual data
+	   starting from third byte is actual data
+	   2. middle packet : first two bytes of paylod will be discarded, and starting from third byte is actual data
+	   3. last packet : first two bytes of payload will be discarded, and starting from third byte is actual data
+
+	   That means,
+	   first packet : | aa | bb | cc | dd | ee | ...1...
+	   middle packet : | 00 | 11 | 22 | 33 | ...2...
+	   last packet : | 66 | 77 | 88 | 99 | ...3... | end |
+	 
+	   THEN FRAME DATA IS :
+	   xx is calculated from aa and bb
+	   | xx | cc | dd | ee | ...1... | 22 | 33 | ...2... | 88 | 99 | ...3... | end |
+	*/
+
 	int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
 
 	if (position == 0 || position == 1) {
