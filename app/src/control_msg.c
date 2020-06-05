@@ -53,19 +53,14 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *payload) {
             return 1 + len;
         }
         case CONTROL_MSG_TYPE_INJECT_TOUCH_EVENT:
-	  // LOGI("TOUCH_EVENT HERE!");
-	  // LOGI("buf[0] = %u", buf[0]); // always 2
             buf[1] = msg->inject_touch_event.action;
 	    // LOGI("buf[1] = %u", buf[1]); // click 0 release 1 drag 2
-	    // LOGI("pointer_id = %lu", msg->inject_touch_event.pointer_id); // not needed for fluid
             buffer_write64be(&buf[2], msg->inject_touch_event.pointer_id);
             write_position(&buf[10], &msg->inject_touch_event.position);
-	    // LOGI("x position = %d", 256 * buf[12] + buf[13]);
-	    // LOGI("y position = %d", 256 * buf[16] + buf[17]);
 	    
 	    int payload_length = 4; // ; ; 0 \n
-	    uint16_t pos_x = 256 * buf[12] + buf[13];
-	    uint16_t pos_y = 256 * buf[16] + buf[17];
+	    uint16_t pos_x = (buf[12] << 8) | buf[13];
+	    uint16_t pos_y = (buf[16] << 8) | buf[17];
 	    if (pos_x < 10) {
 	      payload_length += 1;
 	    }

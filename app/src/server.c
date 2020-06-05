@@ -15,10 +15,6 @@
 #include "util/net.h"
 #include "util/str_util.h"
 
-/* FLUID start */
-#include <unistd.h>
-/* FLUID end */
-
 #define SOCKET_NAME "scrcpy"
 #define SERVER_FILENAME "scrcpy-server"
 
@@ -141,9 +137,7 @@ disable_tunnel(struct server *server) {
 
 static socket_t
 listen_on_port(uint16_t port) {
-  /* FLUID start */
 #define IPV4_LOCALHOST 0xC0A80064
-  /* FLUID end */
     return net_listen(IPV4_LOCALHOST, port, 1);
 }
 
@@ -321,11 +315,10 @@ connect_and_read_byte(uint16_t port) {
     if (socket == INVALID_SOCKET) {
         return INVALID_SOCKET;
     }
-
+    /*
     char byte;
     // the connection may succeed even if the server behind the "adb tunnel"
     // is not listening, so read one byte to detect a working connection
-    /*
     if (net_recv(socket, &byte, 1) != 1) {
         // the server is not listening yet behind the adb tunnel
         net_close(socket);
@@ -338,7 +331,7 @@ connect_and_read_byte(uint16_t port) {
 static socket_t
 connect_to_server(uint16_t port, uint32_t attempts, uint32_t delay) {
     do {
-        LOGI("Remaining connection attempts: %d", (int) attempts);
+        LOGD("Remaining connection attempts: %d", (int) attempts);
         socket_t socket = connect_and_read_byte(port);
         if (socket != INVALID_SOCKET) {
             // it worked!
@@ -443,8 +436,7 @@ error1:
 
 bool
 server_connect_to(struct server *server) {
-  /* FLUID start */
-    if (0) {
+    if (false) {
         server->video_socket = net_accept(server->server_socket);
         if (server->video_socket == INVALID_SOCKET) {
             return false;
@@ -471,9 +463,15 @@ server_connect_to(struct server *server) {
             return false;
         }
 
+        // we know that the device is listening, we don't need several attempts
+	/*
+        server->control_socket =
+            net_connect(IPV4_LOCALHOST, server->local_port);
+        if (server->control_socket == INVALID_SOCKET) {
+            return false;
+        }
+	*/
     }
-
-    /* FLUID end */
 
     // we don't need the adb tunnel anymore
     disable_tunnel(server); // ignore failure

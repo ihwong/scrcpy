@@ -8,7 +8,6 @@
 
 bool
 controller_init(struct controller *controller, socket_t control_socket) {
-  LOGI("controller_init HERE!");
     cbuf_init(&controller->queue);
 
     if (!receiver_init(&controller->receiver, control_socket)) {
@@ -61,20 +60,14 @@ controller_push_msg(struct controller *controller,
 static bool
 process_msg(struct controller *controller,
               const struct control_msg *msg) {
-    // unsigned char serialized_msg[CONTROL_MSG_SERIALIZED_MAX_SIZE];
     unsigned char *serialized_msg = control_msg_serialize(msg, serialized_msg);
-    LOGI("len = %d, msg = %s", strlen(serialized_msg), serialized_msg);
-    /*
+    int length = strlen(serialized_msg);
     if (!length) {
         return false;
     }
-    */
-    int w = net_send_all(controller->control_socket, serialized_msg, strlen(serialized_msg));
-    /*
+    LOGI("length = %d, serialized_msg = %s", length, serialized_msg);
     int w = net_send_all(controller->control_socket, serialized_msg, length);
     return w == length;
-    */
-    return true;
 }
 
 static int
@@ -109,7 +102,6 @@ run_controller(void *data) {
 
 bool
 controller_start(struct controller *controller) {
-  LOGI("controller_start HERE");
     LOGD("Starting controller thread");
 
     controller->thread = SDL_CreateThread(run_controller, "controller",
