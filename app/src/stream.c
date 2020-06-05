@@ -37,17 +37,6 @@ uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
 
 static bool
 stream_recv_packet(struct stream *stream, AVPacket *packet) {
-  // The video stream contains raw packets, without time information. When we
-  // record, we retrieve the timestamps separately, from a "meta" header
-  // added by the server before each raw packet.
-  //
-  // The "meta" header length is 12 bytes:
-  // [. . . . . . . .|. . . .]. . . . . . . . . . . . . . . ...
-  //  <-------------> <-----> <-----------------------------...
-  //        PTS        packet        raw packet
-  //                    size
-  //
-  // It is followed by <packet_size> bytes containing the packet/frame.
 
   uint32_t frame_size = 0;
   uint8_t frame_data[1048576] = {0}; // 1MB is (hopefully) enough for one frame
@@ -134,7 +123,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
       packet_size -= 2;
     }
 
-    printf("len = %d, packet_size = %d\n", len, packet_size);
+    // printf("len = %d, packet_size = %d\n", len, packet_size);
 
     int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
     int writeIndex = frame_size;
@@ -179,25 +168,17 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 
   } // end of for loop for on packet
 
-  /*
-  if (av_new_packet(packet, packet_size)) {
-    LOGE("Could not allocate packet");
-    return false;
-  }
-  */
-
-
-
   if (av_new_packet(packet, frame_size)) {
     LOGE("Could not allocate packet");
     return false;
   }
+
   
   for (uint32_t i = 0; i < frame_size; i++) {
     packet->data[i] = frame_data[i];
-    printf("%02x ", frame_data[i]);
+    // printf("%02x ", frame_data[i]);
   }
-  printf("\n");
+  // printf("\n");
   
   printf("frame_size = %u\n", frame_size);
   
@@ -233,26 +214,29 @@ process_config_packet(struct stream *stream, AVPacket *packet) {
 
 static bool
 process_frame(struct stream *stream, AVPacket *packet) {
+  LOGI("process_frame aa");
     if (stream->decoder && !decoder_push(stream->decoder, packet)) {
+        LOGI("process_frame bb");
         return false;
     }
-
+  LOGI("process_frame cc");
     if (stream->recorder) {
+        LOGI("process_frame dd");
         packet->dts = packet->pts;
 
         if (!recorder_push(stream->recorder, packet)) {
+	    LOGI("process_frame ee");
             LOGE("Could not send packet to recorder");
             return false;
         }
     }
-
+  LOGI("process_frame ff");
     return true;
 }
 
 static bool
 stream_parse(struct stream *stream, AVPacket *packet) {
-
-  LOGI("stream_parse!!");
+    LOGI("stream_parse 111");
     uint8_t *in_data = packet->data;
     int in_len = packet->size;
     uint8_t *out_data = NULL;
@@ -260,22 +244,26 @@ stream_parse(struct stream *stream, AVPacket *packet) {
     int r = av_parser_parse2(stream->parser, stream->codec_ctx,
                              &out_data, &out_len, in_data, in_len,
                              AV_NOPTS_VALUE, AV_NOPTS_VALUE, -1);
-
+    LOGI("stream_parse 222");
     // PARSER_FLAG_COMPLETE_FRAMES is set
     assert(r == in_len);
     (void) r;
     assert(out_len == in_len);
-
+    LOGI("stream_parse 333");
+    
     if (stream->parser->key_frame == 1) {
         packet->flags |= AV_PKT_FLAG_KEY;
     }
 
     bool ok = process_frame(stream, packet);
+
+    LOGI("stream_parse 444");
+    
     if (!ok) {
         LOGE("Could not process frame");
         return false;
     }
-
+    
     return true;
 }
 
@@ -283,21 +271,27 @@ static bool
 stream_push_packet(struct stream *stream, AVPacket *packet) {
   // bool is_config = packet->pts == AV_NOPTS_VALUE;
     bool is_config = false;
-    LOGI("stream_push!! 111");
+
+    LOGI("HERE stream_push_packet 111");
 
     // A config packet must not be decoded immetiately (it contains no
     // frame); instead, it must be concatenated with the future data packet.
     if (stream->has_pending || is_config) {
+      // LOGI("stream_push_packet 222");
         size_t offset;
         if (stream->has_pending) {
+	  // LOGI("stream_push_packet 333");
             offset = stream->pending.size;
             if (av_grow_packet(&stream->pending, packet->size)) {
+	      // LOGI("stream_push_packet 444");
                 LOGE("Could not grow packet");
                 return false;
             }
         } else {
+	  // LOGI("stream_push_packet 555");
             offset = 0;
             if (av_new_packet(&stream->pending, packet->size)) {
+	      // LOGI("stream_push_packet 666");
                 LOGE("Could not create packet");
                 return false;
             }
@@ -305,8 +299,9 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
         }
 
         memcpy(stream->pending.data + offset, packet->data, packet->size);
-
+	// LOGI("stream_push_packet 777");
         if (!is_config) {
+	  // LOGI("stream_push_packet 888");
             // prepare the concat packet to send to the decoder
             stream->pending.pts = packet->pts;
             stream->pending.dts = packet->dts;
@@ -314,32 +309,32 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
             packet = &stream->pending;
         }
     }
-
-    LOGI("stream_push!! 222");
     
     if (is_config) {
-        LOGI("stream_push!! 333");
+      // LOGI("stream_push_packet 999");
         // config packet
         bool ok = process_config_packet(stream, packet);
         if (!ok) {
             return false;
         }
     } else {
-        LOGI("stream_push!! 444");
         // data packet
+        LOGI("HERE stream_push_packet aaa");
         bool ok = stream_parse(stream, packet);
 
         if (stream->has_pending) {
+	  // LOGI("stream_push_packet bbb");
             // the pending packet must be discarded (consumed or error)
             stream->has_pending = false;
             av_packet_unref(&stream->pending);
         }
 
         if (!ok) {
+	  // LOGI("stream_push_packet ccc");
             return false;
         }
     }
-    LOGI("stream_push!! 555");
+    LOGI("HERE stream_push_packet ddd");
     return true;
 }
 
@@ -441,29 +436,28 @@ stream_init(struct stream *stream, socket_t msocket,
     stream->has_pending = false;
       struct sockaddr_in server_addr;
 
-  printf("control_socket socket() try\n");
+  printf("video_socket socket() try\n");
   if ((msocket = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-    printf("control_socket socket() failed\n");
+    printf("video_socket socket() failed\n");
     close(msocket);
     exit(1);
   }
-  printf("control_socket socket() success\n");
+  printf("video_socket socket() success\n");
 
   memset(&server_addr, 0, sizeof(server_addr));
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = inet_addr("192.168.0.100");
   server_addr.sin_port = htons(atoi("10000"));
 
-  printf("control_socket connect() try\n");
+  printf("video_socket connect() try\n");
   for ( ; ; ) {
     if (connect(msocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-      printf("control_socket connect() failed\n");
     }
     else {
       break;
     }
   }
-  printf("control_socket connect() success\n");
+  printf("video_socket connect() success\n");
   stream->socket = msocket;
   LOGI("video_socket ok!");
 }

@@ -170,14 +170,30 @@ enum event_result {
 
 static enum event_result
 handle_event(SDL_Event *event, bool control) {
+  LOGI("handle_event 11");
+  printf("event->type = %u\n", event->type);
+  printf("event->type = %u\n", EVENT_NEW_FRAME);
+  printf("event->type = %u\n", EVENT_STREAM_STOPPED);
+  printf("event->type = %u\n", SDL_QUIT);
+  printf("event->type = %u\n", SDL_WINDOWEVENT);
+  printf("event->type = %u\n", SDL_TEXTINPUT);
+  printf("event->type = %u\n", SDL_KEYDOWN);
+  printf("event->type = %u\n", SDL_DROPFILE);
+  printf("event->type = %u\n", event->type);
+  printf("event->type = %u\n", event->type);
+  printf("event->type = %u\n", event->type);
+		      
   switch (event->type) {
   case EVENT_STREAM_STOPPED:
+    LOGI("handle_event stream_stopped");
     LOGD("Video stream stopped");
     return EVENT_RESULT_STOPPED_BY_EOS;
   case SDL_QUIT:
+    LOGI("handle event here");
     LOGD("User requested to quit");
     return EVENT_RESULT_STOPPED_BY_USER;
   case EVENT_NEW_FRAME:
+    LOGI("handle_event 33");
     if (!screen.has_frame) {
       screen.has_frame = true;
       // this is the very first frame, show the window
@@ -188,6 +204,7 @@ handle_event(SDL_Event *event, bool control) {
     }
     break;
   case SDL_WINDOWEVENT:
+    LOGI("BREAKDOWN :(");
     screen_handle_window_event(&screen, &event->window);
     break;
   case SDL_TEXTINPUT:
@@ -255,7 +272,9 @@ event_loop(bool display, bool control) {
   LOGI("event_loop 22");
   SDL_Event event;
   while (SDL_WaitEvent(&event)) {
+    LOGI("event_loop 33");
     enum event_result result = handle_event(&event, control);
+    LOGI("event_loop 333");
     switch (result) {
     case EVENT_RESULT_STOPPED_BY_USER:
       return true;
@@ -410,62 +429,61 @@ scrcpy(const struct scrcpy_options *options) {
   }
   stream_started = true;
 
-  for ( ; ; ) {
-    // 지금은 stream 스레드를 구현. 이거는 임시 배리어
-  }
-
   LOGI("connection all good! 22");
   /*
-  if (!device_read_info(server.video_socket, device_name, &frame_size)) {
+    if (!device_read_info(server.video_socket, device_name, &frame_size)) {
     goto end;
-  }
+    }
   */
   LOGI("connection all good! 33");
 
-    if (options->display) {
+  if (options->display) {
     if (options->control) {
-    if (!controller_init(&controller, server.control_socket)) {
-    goto end;
-    }
-    controller_initialized = true;
+      if (!controller_init(&controller, server.control_socket)) {
+	goto end;
+      }
+      controller_initialized = true;
 
-    if (!controller_start(&controller)) {
-    goto end;
-    }
-    controller_started = true;
+      if (!controller_start(&controller)) {
+	goto end;
+      }
+      controller_started = true;
     }
 
     const char *window_title =
-    options->window_title ? options->window_title : device_name;
+      options->window_title ? options->window_title : device_name;
 
+    frame_size.width = 1440;
+    frame_size.height = 2620;
+    
     if (!screen_init_rendering(&screen, window_title, frame_size,
-    options->always_on_top, options->window_x,
-    options->window_y, options->window_width,
-    options->window_height,
-    options->window_borderless,
-    options->rotation, options-> mipmaps)) {
-    LOGI("SHOULD NOT BE HERE!");
-    goto end;
+			       options->always_on_top, options->window_x,
+			       options->window_y, options->window_width,
+			       options->window_height,
+			       options->window_borderless,
+			       options->rotation, options-> mipmaps)) {
+      goto end;
     }
 
     if (options->turn_screen_off) {
-    struct control_msg msg;
-    msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
-    msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
+      struct control_msg msg;
+      msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
+      msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
 
-    if (!controller_push_msg(&controller, &msg)) {
-    LOGW("Could not request 'set screen power mode'");
-    }
+      if (!controller_push_msg(&controller, &msg)) {
+	LOGW("Could not request 'set screen power mode'");
+      }
     }
 
     if (options->fullscreen) {
-    screen_switch_fullscreen(&screen);
+      screen_switch_fullscreen(&screen);
     }
-    }
+  }
 
-    input_manager.prefer_text = options->prefer_text;
+  input_manager.prefer_text = options->prefer_text;
   
   LOGI("MAIN HERE!");
+
   ret = event_loop(options->display, options->control);
   LOGD("quit...");
 

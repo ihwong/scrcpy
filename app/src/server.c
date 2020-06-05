@@ -317,9 +317,7 @@ execute_server(struct server *server, const struct server_params *params) {
 
 static socket_t
 connect_and_read_byte(uint16_t port) {
-    LOGI("connect_and_read_byte 111");
     socket_t socket = net_connect(IPV4_LOCALHOST, port);
-    LOGI("connect_and_read_byte 222");
     if (socket == INVALID_SOCKET) {
         return INVALID_SOCKET;
     }

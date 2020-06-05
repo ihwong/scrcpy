@@ -21,13 +21,18 @@ push_frame(struct decoder *decoder) {
     bool previous_frame_skipped;
     video_buffer_offer_decoded_frame(decoder->video_buffer,
                                      &previous_frame_skipped);
+    /*
     if (previous_frame_skipped) {
+      LOGI("???");
         // the previous EVENT_NEW_FRAME will consume this frame
         return;
     }
+    */
     static SDL_Event new_frame_event = {
         .type = EVENT_NEW_FRAME,
     };
+    LOGI("EVENT_NEW_FRAME = %u", EVENT_NEW_FRAME);
+    LOGI("ANYWAY, HERE~~");
     SDL_PushEvent(&new_frame_event);
 }
 
@@ -64,22 +69,30 @@ decoder_push(struct decoder *decoder, const AVPacket *packet) {
 // the new decoding/encoding API has been introduced by:
 // <http://git.videolan.org/?p=ffmpeg.git;a=commitdiff;h=7fc329e2dd6226dfecaa4a1d7adf353bf2773726>
 #ifdef SCRCPY_LAVF_HAS_NEW_ENCODING_DECODING_API
+  LOGI("decoder_push 111");
     int ret;
     if ((ret = avcodec_send_packet(decoder->codec_ctx, packet)) < 0) {
         LOGE("Could not send video packet: %d", ret);
         return false;
     }
+      LOGI("decoder_push 333");
     ret = avcodec_receive_frame(decoder->codec_ctx,
                                 decoder->video_buffer->decoding_frame);
+    LOGI("ret value = %d", ret);
+      LOGI("decoder_push 444");
     if (!ret) {
+        LOGI("decoder_push 555");
         // a frame was received
         push_frame(decoder);
     } else if (ret != AVERROR(EAGAIN)) {
         LOGE("Could not receive video frame: %d", ret);
         return false;
     }
+      LOGI("decoder_push 777");
 #else
+      /*
     int got_picture;
+      LOGI("decoder_push 888");
     int len = avcodec_decode_video2(decoder->codec_ctx,
                                     decoder->video_buffer->decoding_frame,
                                     &got_picture,
@@ -88,9 +101,12 @@ decoder_push(struct decoder *decoder, const AVPacket *packet) {
         LOGE("Could not decode video packet: %d", len);
         return false;
     }
+      LOGI("decoder_push 999");
     if (got_picture) {
+        LOGI("decoder_push aaa");
         push_frame(decoder);
     }
+      */
 #endif
     return true;
 }
