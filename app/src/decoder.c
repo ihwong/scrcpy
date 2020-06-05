@@ -21,13 +21,12 @@ push_frame(struct decoder *decoder) {
     bool previous_frame_skipped;
     video_buffer_offer_decoded_frame(decoder->video_buffer,
                                      &previous_frame_skipped);
-    /*
+    /* FLUID start */
     if (previous_frame_skipped) {
-      LOGI("???");
         // the previous EVENT_NEW_FRAME will consume this frame
-        return;
+        // return;
     }
-    */
+    /* FLUID end */
     static SDL_Event new_frame_event = {
         .type = EVENT_NEW_FRAME,
     };
@@ -74,20 +73,15 @@ decoder_push(struct decoder *decoder, const AVPacket *packet) {
     }
     ret = avcodec_receive_frame(decoder->codec_ctx,
                                 decoder->video_buffer->decoding_frame);
-
     if (!ret) {
-
         // a frame was received
         push_frame(decoder);
     } else if (ret != AVERROR(EAGAIN)) {
         LOGE("Could not receive video frame: %d", ret);
         return false;
     }
-
 #else
-      /*
     int got_picture;
-      LOGI("decoder_push 888");
     int len = avcodec_decode_video2(decoder->codec_ctx,
                                     decoder->video_buffer->decoding_frame,
                                     &got_picture,
@@ -96,12 +90,9 @@ decoder_push(struct decoder *decoder, const AVPacket *packet) {
         LOGE("Could not decode video packet: %d", len);
         return false;
     }
-      LOGI("decoder_push 999");
     if (got_picture) {
-        LOGI("decoder_push aaa");
         push_frame(decoder);
     }
-      */
 #endif
     return true;
 }
