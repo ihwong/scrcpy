@@ -204,7 +204,7 @@ create_texture(struct screen *screen) {
     struct size size = screen->frame_size;
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             1440, 2620);
+                                             size.width, size.height);
     if (!texture) {
         return NULL;
     }
@@ -231,9 +231,6 @@ screen_init_rendering(struct screen *screen, const char *window_title,
                       int16_t window_x, int16_t window_y, uint16_t window_width,
                       uint16_t window_height, bool window_borderless,
                       uint8_t rotation, bool mipmaps) {
-
-    window_width = 1440;
-    window_height = 2620;
     screen->frame_size = frame_size;
     screen->rotation = rotation;
     if (rotation) {
@@ -332,9 +329,9 @@ screen_init_rendering(struct screen *screen, const char *window_title,
     // HiDPI issues with some SDL renderers when several displays having
     // different HiDPI scaling are connected
     SDL_SetWindowSize(screen->window, window_size.width, window_size.height);
-    
-    // screen_update_content_rect(screen);
-    
+
+    screen_update_content_rect(screen);
+
     return true;
 }
 
@@ -478,6 +475,7 @@ screen_render(struct screen *screen, bool update_content_rect) {
     if (update_content_rect) {
         screen_update_content_rect(screen);
     }
+
     SDL_RenderClear(screen->renderer);
     if (screen->rotation == 0) {
         SDL_RenderCopy(screen->renderer, screen->texture, NULL, &screen->rect);
@@ -499,6 +497,7 @@ screen_render(struct screen *screen, bool update_content_rect) {
             assert(screen->rotation == 2);
             dstrect = &screen->rect;
         }
+
         SDL_RenderCopyEx(screen->renderer, screen->texture, NULL, dstrect,
                          angle, NULL, 0);
     }
