@@ -72,8 +72,7 @@ struct control_msg {
 
 // buf size must be at least CONTROL_MSG_SERIALIZED_MAX_SIZE
 // return the number of bytes written
-// size_t
-unsigned char *
+size_t
 control_msg_serialize(const struct control_msg *msg, unsigned char *buf);
 
 void
