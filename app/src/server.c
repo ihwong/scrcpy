@@ -445,7 +445,6 @@ bool
 server_connect_to(struct server *server) {
   /* FLUID start */
     if (0) {
-        LOGI("FLUID CONNECT STARTS FROM HERE?");
         server->video_socket = net_accept(server->server_socket);
         if (server->video_socket == INVALID_SOCKET) {
             return false;
@@ -464,26 +463,14 @@ server_connect_to(struct server *server) {
             // otherwise, it is closed by run_wait_server()
         }
     } else {
-        LOGI("FLUID CONNECT STARTS FROM HERE!");
         uint32_t attempts = 100;
         uint32_t delay = 100; // ms
-	LOGI("FLUID CONNECT STARTS FROM HERE! 11");
         server->control_socket =
             connect_to_server(5001, attempts, delay);
         if (server->control_socket == INVALID_SOCKET) {
             return false;
         }
-	LOGI("control_socket ok!");
 
-
-	
-	if (0) {
-	    for ( ; ; ) {
-                send(server->control_socket, "718;288;0\n", sizeof(char) * 10, 0); // 10 = strlen("718;288;0") + 1 for newline char
-                send(server->control_socket, "718;288;1\n", sizeof(char) * 10, 0);
-	        sleep(1);
-	    }
-	}
     }
 
     /* FLUID end */

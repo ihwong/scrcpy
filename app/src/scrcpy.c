@@ -348,8 +348,6 @@ scrcpy(const struct scrcpy_options *options) {
     goto end;
   }
 
-  LOGI("connection all good!");
-
   char device_name[DEVICE_NAME_FIELD_LENGTH];
   struct size frame_size;
 
@@ -409,22 +407,18 @@ scrcpy(const struct scrcpy_options *options) {
   }
   stream_started = true;
 
-  LOGI("connection all good! 22");
   /*
     if (!device_read_info(server.video_socket, device_name, &frame_size)) {
     goto end;
     }
   */
-  LOGI("connection all good! 33");
 
   if (options->display) {
     if (options->control) {
-      LOGI("controller_init");
       if (!controller_init(&controller, server.control_socket)) {
 	goto end;
       }
       controller_initialized = true;
-      LOGI("controller_start");
       if (!controller_start(&controller)) {
 	goto end;
       }
@@ -450,7 +444,6 @@ scrcpy(const struct scrcpy_options *options) {
       struct control_msg msg;
       msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
       msg.set_screen_power_mode.mode = SCREEN_POWER_MODE_OFF;
-      LOGI("controller_push_msg");
       if (!controller_push_msg(&controller, &msg)) {
 	LOGW("Could not request 'set screen power mode'");
       }
@@ -462,8 +455,6 @@ scrcpy(const struct scrcpy_options *options) {
   }
 
   input_manager.prefer_text = options->prefer_text;
-  
-  LOGI("MAIN HERE!");
 
   ret = event_loop(options->display, options->control);
   LOGD("quit...");

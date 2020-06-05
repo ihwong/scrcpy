@@ -265,18 +265,14 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
     // A config packet must not be decoded immetiately (it contains no
     // frame); instead, it must be concatenated with the future data packet.
     if (stream->has_pending || is_config) {
-      // LOGI("stream_push_packet 222");
         size_t offset;
         if (stream->has_pending) {
-	  // LOGI("stream_push_packet 333");
             offset = stream->pending.size;
             if (av_grow_packet(&stream->pending, packet->size)) {
-	      // LOGI("stream_push_packet 444");
                 LOGE("Could not grow packet");
                 return false;
             }
         } else {
-	  // LOGI("stream_push_packet 555");
             offset = 0;
             if (av_new_packet(&stream->pending, packet->size)) {
 	      // LOGI("stream_push_packet 666");
@@ -287,9 +283,7 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
         }
 
         memcpy(stream->pending.data + offset, packet->data, packet->size);
-	// LOGI("stream_push_packet 777");
         if (!is_config) {
-	  // LOGI("stream_push_packet 888");
             // prepare the concat packet to send to the decoder
             stream->pending.pts = packet->pts;
             stream->pending.dts = packet->dts;
@@ -299,7 +293,7 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
     }
     
     if (is_config) {
-      // LOGI("stream_push_packet 999");
+
         // config packet
         bool ok = process_config_packet(stream, packet);
         if (!ok) {
@@ -310,14 +304,12 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
         bool ok = stream_parse(stream, packet);
 
         if (stream->has_pending) {
-	  // LOGI("stream_push_packet bbb");
             // the pending packet must be discarded (consumed or error)
             stream->has_pending = false;
             av_packet_unref(&stream->pending);
         }
 
         if (!ok) {
-	  // LOGI("stream_push_packet ccc");
             return false;
         }
     }
@@ -366,8 +358,6 @@ run_stream(void *data) {
     // We must only pass complete frames to av_parser_parse2()!
     // It's more complicated, but this allows to reduce the latency by 1 frame!
     stream->parser->flags |= PARSER_FLAG_COMPLETE_FRAMES;
-
-    LOGI("HERE COMES!");
 
     for ( ; ; ) {
       AVPacket packet;
