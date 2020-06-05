@@ -21,12 +21,10 @@ push_frame(struct decoder *decoder) {
     bool previous_frame_skipped;
     video_buffer_offer_decoded_frame(decoder->video_buffer,
                                      &previous_frame_skipped);
-    /* FLUID start */
     if (previous_frame_skipped) {
         // the previous EVENT_NEW_FRAME will consume this frame
-        // return;
+        return;
     }
-    /* FLUID end */
     static SDL_Event new_frame_event = {
         .type = EVENT_NEW_FRAME,
     };
