@@ -27,25 +27,33 @@
 #define HEADER_SIZE 12
 #define NO_PTS UINT64_C(-1)
 
+struct sockaddr_in server_addr;
+
 static bool
 stream_recv_packet(struct stream *stream, AVPacket *packet) {
     uint32_t frame_size = 0;
     uint8_t frame_data[1048576] = {0}; // 1MB is (hopefully) enough for one frame // use unsigned char to prevent "ffffffe0" and so on (we want "e0")
     uint16_t fragment_trace = 0x0000; // used ONLY for detecting position
-    uint8_t buffer[2];
+    uint8_t buffer[2000]; // sufficiently larger than 1500 B
   
     for ( ; ; ) { // processing for one packet
-        uint8_t rtp_header[14];
         uint8_t position = 0; // 0 full packet, 1 first packet, 2 middle packet, 3 last packet, -1 error
 
-        // parser for RTP header
-        if (net_recv_all(stream->socket, rtp_header, 14) == 0) {
+	socklen_t addr_sz = sizeof(server_addr);
+	int len = recvfrom(stream->socket, buffer, 2000, 0,
+				(struct sockaddr*)&server_addr, &addr_sz);
+        if (len == 0) {
             printf("connection terminated by server.\n");
             close(stream->socket);
             exit(0);
         }
+
+	for (int i = 0; i < len; i++) {
+	    printf("%02x ", buffer[i]);
+	}
+	printf("\n");
     
-        fragment_trace = (fragment_trace << 8) | rtp_header[1]; // previous rtp_header[1] and current rtp_header[1]
+        fragment_trace = (fragment_trace << 8) | buffer[1]; // previous rtp_header[1] and current rtp_header[1]
     
         /* packet fragment parser */
         // (previous packet, current packet)
@@ -74,7 +82,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 	    break;
 	}
 
-	uint16_t len = (rtp_header[12] << 8 | rtp_header[13]) - 14; // 14 = rtp header
+	// uint16_t len = 0; // (rtp_header[12] << 8 | rtp_header[13]) - 14; // 14 = rtp header
 
 	/* dealing with rtp payload! */
 
@@ -96,7 +104,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 	   | xx | cc | dd | ee | ...1... | 22 | 33 | ...2... | 88 | 99 | ...3... | end |
 	*/
 
-	int offset = 0; // if one full packet we start from offset zero, else we start from offset 2
+	int offset = 12; // if one full packet we start from offset 12 + zero, else we start from offset 12 + 2
 
 	if (position == 0 || position == 1) {
 	    frame_data[0] = 0x00;
@@ -107,26 +115,15 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
 	}
     
 	if (position != 0) {
-	    if (net_recv_all(stream->socket, buffer, 2) == 0) {
-	        printf("connection terminated by server.\n");
-		close(stream->socket);
-		exit(0);
-	    }
 	    if (position == 1) { // calculate nalType if 1st packet
-	        buffer[0] = (buffer[0] & 0xe0) | (buffer[1] & 0x1f);
-		frame_data[frame_size] = buffer[0];
+		frame_data[frame_size] = (buffer[12] & 0xe0) | (buffer[13] & 0x1f);
 		frame_size += 1;
 	    }
-	    offset = 2;
+	    offset += 2;
 	}
 
 	for (uint16_t i = offset; i < len; i++) {
-	    if (net_recv_all(stream->socket, buffer, 1) == 0) {
-	        printf("connection terminated by server.\n");
-		close(stream->socket);
-		exit(0);
-	    }
-	    frame_data[frame_size] = buffer[0];
+	    frame_data[frame_size] = buffer[i];
 	    frame_size += 1;
 	}
 
@@ -143,6 +140,10 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
   
     for (uint32_t i = 0; i < frame_size; i++) {
         packet->data[i] = frame_data[i];
+    }
+
+    for (uint32_t i = 0; i < frame_size; i++) {
+	printf("%02x ", frame_data[i]);
     }
   
     printf("frame_size = %u\n", frame_size);
@@ -360,18 +361,17 @@ end:
 void
 stream_init(struct stream *stream, socket_t msocket,
             struct decoder *decoder, struct recorder *recorder) {
-    struct sockaddr_in server_addr;
     LOGI("video_socket socket() try\n");
-    while ((msocket = socket(AF_INET, SOCK_STREAM, 0)) == -1);
+    while ((msocket = socket(PF_INET, SOCK_DGRAM, 0)) == -1);
     LOGI("video_socket socket() success\n");
 
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("192.168.0.100");
-    server_addr.sin_port = htons(atoi("10000"));
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_addr.sin_port = htons(atoi("10001"));
 
     LOGI("video_socket connect() try\n");
-    while (connect(msocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0);
+    while (bind(msocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0);
     LOGI("video_socket connect() success\n");
     stream->socket = msocket;
     stream->decoder = decoder,
