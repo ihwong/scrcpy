@@ -35,6 +35,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include <fcntl.h>
+#include <arpa/inet.h>
+
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
@@ -333,6 +336,102 @@ scrcpy(const struct scrcpy_options *options) {
         goto end;
     }
 
+    /* DUAL : Parser for UDP Component Data */
+
+    int flag;
+    flag = fcntl(server.control_socket, F_GETFL, 0);
+    fcntl(server.control_socket, F_SETFL, flag | O_NONBLOCK);
+
+    char buffer[1];
+    int rcvl = 1;
+    int retr = 0;
+    char strings[1024];
+    int idx = 0;
+
+    LOGI("sending display info...\n");
+    send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0);
+    // 22 = strlen("display:1440.2620.560") + 1 for newline char
+    LOGI("display info sent!\n");
+    
+    for (int i = 0; ; i++) {
+	rcvl = recv(server.control_socket, buffer, 1, 0);
+	if (rcvl > 0) {
+	    strings[idx] = buffer[0];
+	    retr = 0;
+	    idx++;
+	}
+	else {
+	    retr++;
+	}
+	if (retr > 5000000) {
+	    break;
+	}
+    }
+
+    // parsing received string...
+    // code is quite dirty but anyway it works
+
+    strings[idx] = '\0';
+    
+    flag = fcntl(server.control_socket, F_GETFL, 0);
+    fcntl(server.control_socket, F_SETFL, flag);
+
+    char parsed[5][64];
+
+    char *ptr = strtok(strings, "surface:");
+    int parsed_idx = 0;
+    while (ptr != NULL) {
+        strcpy(parsed[parsed_idx], ptr);
+	ptr = strtok(NULL, "surface:");
+	parsed_idx++;
+    }
+
+    printf("parsed_idx = %d\n", parsed_idx);
+
+    for (int i = 0; i < parsed_idx; i++) {
+	parsed[i][strlen(parsed[i]) - 2] = '\0';
+	// printf("str = %s len = %ld\n", parsed[i], strlen(parsed[i]));
+    }
+
+    struct UDP_Session {
+	
+	// data from packet
+	float x;
+	float y;
+	int width;
+	int height;
+	int sessionPort;
+	
+    };
+
+    struct UDP_Session us[5]; // should use dynamic memory allocation...
+
+    for (int i = 0; i < parsed_idx; i++) {
+        char *ptr2 = strtok(parsed[i], ",");
+	while (ptr2 != NULL) {
+	    us[i].x = atof(ptr2);
+	    ptr2 = strtok(NULL, ",");
+	    us[i].y = atof(ptr2);
+	    ptr2 = strtok(NULL, ",");
+	    us[i].width = atoi(ptr2);
+	    ptr2 = strtok(NULL, ",");
+	    us[i].height = atoi(ptr2);
+	    ptr2 = strtok(NULL, ",");
+	    us[i].sessionPort = atoi(ptr2);
+	    ptr2 = strtok(NULL, ",");
+	}
+    }
+
+    for (int i = 0; i < parsed_idx; i++) {
+	printf("x = %f\n", us[i].x);
+	printf("y = %f\n", us[i].y);
+	printf("width = %d\n", us[i].width);
+	printf("height = %d\n", us[i].height);
+	printf("sessionPort = %d\n", us[i].sessionPort);
+    }
+    
+    /* End of DUAL : Parser for UDP Component Data */
+    
     char device_name[DEVICE_NAME_FIELD_LENGTH];
     struct size frame_size;
 
@@ -381,12 +480,47 @@ scrcpy(const struct scrcpy_options *options) {
         recorder_initialized = true;
     }
 
-    av_log_set_callback(av_log_callback);
+    /* UDP Sessions */
+    static struct fps_counter fps_counter_udp[5];
+    static struct video_buffer video_buffer_udp[5];
+    static struct stream stream_udp[5];
+    static struct decoder decoder_udp[5];
+    static struct recorder recorder_udp[5];
+    int socket_udp[5];
 
-    LOGI("sending display info...\n");
-    send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0);
-    // 22 = strlen("display:1440.2620.560") + 1 for newline char
-    LOGI("display info sent!\n");
+    struct decoder *dec_udp[5] = {NULL};
+    for (int i = 0; i < 5; i++) {
+	if (options->display) {
+	    
+	    if (!fps_counter_init(&fps_counter_udp[i])) {
+		goto end;
+	    }
+
+	    if (!video_buffer_init(&video_buffer_udp[i], &fps_counter_udp[i],
+				   options->render_expired_frames)) {
+		goto end;
+	    }
+
+	    decoder_init(&decoder_udp[i], &video_buffer_udp[i]);
+	    dec_udp[i] = &decoder_udp[i];
+	}
+    }
+
+    struct recoder *rec_udp[5] = {NULL};
+    for (int i = 0; i < 5; i++) {
+	if (record) {
+	    if (!recorder_init(&recorder_udp[i],
+			       options->record_filename,
+			       options->record_format,
+			       frame_size)) {
+		goto end;
+	    }
+	    rec_udp[i] = &recorder_udp[i];
+	}
+    }
+    /* End of UDP Sessions */
+    
+    av_log_set_callback(av_log_callback);
 
     stream_init(&stream, server.video_socket, dec, rec);
 
@@ -396,6 +530,15 @@ scrcpy(const struct scrcpy_options *options) {
         goto end;
     }
     stream_started = true;
+
+    /* UDP */
+    for (int i = 0; i < parsed_idx; i++) {
+	stream_init_udp(&stream_udp[i], socket_udp[i], dec_udp[i], rec_udp[i], us[i].sessionPort, i);
+	if (!stream_start_udp(&stream_udp[i])) {
+	    goto end;
+	}
+    }
+    /* end of UDP */
 
     if (options->display) {
         if (options->control) {

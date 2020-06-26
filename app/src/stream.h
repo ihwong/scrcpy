@@ -24,14 +24,24 @@ struct stream {
     // packet is available
     bool has_pending;
     AVPacket pending;
+    int udp_port;
+    int udp_index;
 };
 
 void
 stream_init(struct stream *stream, socket_t socket,
             struct decoder *decoder, struct recorder *recorder);
 
+void
+stream_init_udp(struct stream *stream, socket_t msocket,
+                struct decoder *decoder, struct recorder *recorder,
+                int sessionPort, int index);
+
 bool
 stream_start(struct stream *stream);
+
+bool
+stream_start_udp(struct stream *stream);
 
 void
 stream_stop(struct stream *stream);
