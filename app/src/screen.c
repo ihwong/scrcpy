@@ -438,47 +438,75 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
     return true;
 }
 
+SDL_Rect whereToUpdate = {
+    .x = 0,
+    .y = 175,
+    .w = 1440,
+    .h = 810,
+};
+
+SDL_Rect whereToUpdate2 = {
+    .x = 0,
+    .y = 1160,
+    .w = 1440,
+    .h = 90,
+};
+
+AVFrame afterimage, afterimage2;
+
 // write the frame into the texture
 static void
 update_texture(struct screen *screen, const AVFrame *frame) {
 
-    SDL_Rect whereToUpdate;
-
+    if (frame->height == 90) {
+	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
+			     frame->data[0], frame->linesize[0],
+			     frame->data[1], frame->linesize[1],
+			     frame->data[2], frame->linesize[2]);
+	afterimage2 = *frame;
+    }
+    
     if (frame->height == 810) {
-	LOGI("here!!! 11");
-	whereToUpdate.x = 0;
-	LOGI("here!!! 1111");
-	whereToUpdate.y = 175;
-	LOGI("here!!! 1111111");
-	whereToUpdate.w = 1440;
-	whereToUpdate.h = 810;
-	LOGI("here!!! 22");
 	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
 			     frame->data[0], frame->linesize[0],
 			     frame->data[1], frame->linesize[1],
 			     frame->data[2], frame->linesize[2]);
-	LOGI("here!!! 33");
+	afterimage = *frame;
     }
-    else {
+   
+    if (frame->height == 2620) {
 	SDL_UpdateYUVTexture(screen->texture, NULL,
 			     frame->data[0], frame->linesize[0],
 			     frame->data[1], frame->linesize[1],
 			     frame->data[2], frame->linesize[2]);
+	
+	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
+			     afterimage.data[0], afterimage.linesize[0],
+			     afterimage.data[1], afterimage.linesize[1],
+			     afterimage.data[2], afterimage.linesize[2]);
+
+	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
+			     afterimage2.data[0], afterimage2.linesize[0],
+			     afterimage2.data[1], afterimage2.linesize[1],
+			     afterimage2.data[2], afterimage2.linesize[2]);
+	  
     }
+
     if (screen->mipmaps) {
         assert(screen->use_opengl);
         SDL_GL_BindTexture(screen->texture, NULL, NULL);
         screen->gl.GenerateMipmap(GL_TEXTURE_2D);
         SDL_GL_UnbindTexture(screen->texture);
     }
+
 }
 
 bool
 screen_update_frame(struct screen *screen, struct video_buffer *vb) {
     mutex_lock(vb->mutex);
     const AVFrame *frame = video_buffer_consume_rendered_frame(vb);
-    struct size new_frame_size = {frame->width, frame->height};
-    LOGI("frame_width = %d, frame_height = %d, format = %d", frame->width, frame->height, frame->format);
+    // struct size new_frame_size = {frame->width, frame->height};
+    // LOGI("frame_width = %d, frame_height = %d, format = %d", frame->width, frame->height, frame->format);
 
     /*
     if (!prepare_for_frame(screen, new_frame_size)) {

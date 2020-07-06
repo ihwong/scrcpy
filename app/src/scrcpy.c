@@ -181,8 +181,6 @@ handle_event(SDL_Event *event, bool control) {
             return EVENT_RESULT_STOPPED_BY_USER;
         case EVENT_NEW_FRAME:
 	    LOGI("TCP frame arrived!");
-	    LOGI("EVENT TYPE = %d", event->type);
-	    
             if (!screen.has_frame) {
                 screen.has_frame = true;
                 // this is the very first frame, show the window
@@ -195,15 +193,10 @@ handle_event(SDL_Event *event, bool control) {
             break;
         case 195:
 	    LOGI("UDP frame arrived!");
-	    LOGI("EVENT TYPE = %d", event->type);
-            if (!screen2.has_frame) {
-		/*
-                screen2.has_frame = true;
-                // this is the very first frame, show the window
-                screen_show_window(&screen2);
-		*/
-            }
             if (!screen_update_frame(&screen, &video_buffer_udp[0])) {
+                return EVENT_RESULT_CONTINUE;
+            }
+	    if (!screen_update_frame(&screen, &video_buffer_udp[1])) {
                 return EVENT_RESULT_CONTINUE;
             }
 	    break;
@@ -278,8 +271,10 @@ event_loop(bool display, bool control) {
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;
             case EVENT_RESULT_STOPPED_BY_EOS:
+		/*
                 LOGW("Device disconnected");
                 return false;
+		*/
             case EVENT_RESULT_CONTINUE:
                 break;
         }
@@ -588,15 +583,6 @@ scrcpy(const struct scrcpy_options *options) {
         frame_size.height = 2620;
 
         if (!screen_init_rendering(&screen, window_title, frame_size,
-                                   options->always_on_top, options->window_x,
-                                   options->window_y, options->window_width,
-                                   options->window_height,
-                                   options->window_borderless,
-                                   options->rotation, options-> mipmaps)) {
-            goto end;
-        }
-
-	if (!screen_init_rendering(&screen2, window_title, frame_size,
                                    options->always_on_top, options->window_x,
                                    options->window_y, options->window_width,
                                    options->window_height,
