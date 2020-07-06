@@ -128,8 +128,6 @@ decoder_push_udp(struct decoder *decoder, const AVPacket *packet) {
     ret = avcodec_receive_frame(decoder->codec_ctx,
                                 decoder->video_buffer->decoding_frame);
 
-    LOGI("UDP receive frame ret = %d", ret);
-
     if (!ret) {
         // a frame was received
         push_frame_udp(decoder);

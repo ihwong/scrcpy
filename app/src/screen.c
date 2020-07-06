@@ -441,11 +441,30 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
 // write the frame into the texture
 static void
 update_texture(struct screen *screen, const AVFrame *frame) {
-    SDL_UpdateYUVTexture(screen->texture, NULL,
-            frame->data[0], frame->linesize[0],
-            frame->data[1], frame->linesize[1],
-            frame->data[2], frame->linesize[2]);
 
+    SDL_Rect whereToUpdate;
+
+    if (frame->height == 810) {
+	LOGI("here!!! 11");
+	whereToUpdate.x = 0;
+	LOGI("here!!! 1111");
+	whereToUpdate.y = 175;
+	LOGI("here!!! 1111111");
+	whereToUpdate.w = 1440;
+	whereToUpdate.h = 810;
+	LOGI("here!!! 22");
+	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
+			     frame->data[0], frame->linesize[0],
+			     frame->data[1], frame->linesize[1],
+			     frame->data[2], frame->linesize[2]);
+	LOGI("here!!! 33");
+    }
+    else {
+	SDL_UpdateYUVTexture(screen->texture, NULL,
+			     frame->data[0], frame->linesize[0],
+			     frame->data[1], frame->linesize[1],
+			     frame->data[2], frame->linesize[2]);
+    }
     if (screen->mipmaps) {
         assert(screen->use_opengl);
         SDL_GL_BindTexture(screen->texture, NULL, NULL);
@@ -460,11 +479,14 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb) {
     const AVFrame *frame = video_buffer_consume_rendered_frame(vb);
     struct size new_frame_size = {frame->width, frame->height};
     LOGI("frame_width = %d, frame_height = %d, format = %d", frame->width, frame->height, frame->format);
-    
+
+    /*
     if (!prepare_for_frame(screen, new_frame_size)) {
         mutex_unlock(vb->mutex);
         return false;
     }
+    */
+    
     update_texture(screen, frame);
     mutex_unlock(vb->mutex);
 

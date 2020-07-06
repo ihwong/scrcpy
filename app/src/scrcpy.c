@@ -41,6 +41,7 @@
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
 static struct screen screen2 = SCREEN_INITIALIZER;
+static struct screen screen3 = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
 static struct video_buffer video_buffer;
 static struct stream stream;
@@ -195,14 +196,14 @@ handle_event(SDL_Event *event, bool control) {
         case 195:
 	    LOGI("UDP frame arrived!");
 	    LOGI("EVENT TYPE = %d", event->type);
-	    	    LOGI("TCP frame arrived!");
-	    LOGI("EVENT TYPE = %d", event->type);
             if (!screen2.has_frame) {
+		/*
                 screen2.has_frame = true;
                 // this is the very first frame, show the window
                 screen_show_window(&screen2);
+		*/
             }
-            if (!screen_update_frame(&screen2, &video_buffer_udp[0])) {
+            if (!screen_update_frame(&screen, &video_buffer_udp[0])) {
                 return EVENT_RESULT_CONTINUE;
             }
 	    break;
