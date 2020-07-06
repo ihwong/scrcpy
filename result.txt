@@ -1,0 +1,754 @@
+INFO: scrcpy 1.14 <https://github.com/Genymobile/scrcpy>
+* daemon not running; starting now at tcp:5037
+* daemon started successfully
+adb: error: no devices/emulators found
+ERROR: "adb reverse --remove" returned with value 1
+INFO: sending display info...
+INFO: display info sent!
+parsed_idx = 1
+x = 0.000000
+y = 175.000000
+width = 1440
+height = 810
+sessionPort = 10001
+INFO: hoyoung decoder = 0x556999d025a0
+INFO: hoyoung decoder[0] = 0x556999d022e0
+INFO: hoyoung decoder[1] = 0x556999d022f0
+INFO: hoyoung decoder[2] = 0x556999d02300
+INFO: hoyoung decoder[3] = 0x556999d02310
+INFO: hoyoung decoder[4] = 0x556999d02320
+INFO: video_socket socket() try
+INFO: video_socket socket() success
+INFO: video_socket connect() try
+INFO: video_socket connect() success
+INFO: video_socket socket() try
+INFO: video_socket socket() success
+INFO: video_socket connect() try
+INFO: video_socket connect() success
+INFO: 0 udp bind good!!
+INFO: run_stream_udp for index 0
+INFO: OpenGL shaders: ENABLED
+INFO: Created renderer: opengl
+INFO: Renderer: opengl
+INFO: OpenGL version: 3.0 Mesa 19.2.8
+INFO: Trilinear filtering enabled
+INFO: Initial texture: 1440x2620
+INFO: EVENT TYPE = 512
+udp 0 frame_size = 8400
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 768
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 448
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 1952
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: EVENT TYPE = 195
+INFO: UDP frame arrived!
+INFO: push_frame_udp
+tcp 0 frame_size = 40848
+INFO: EVENT TYPE = 32769
+tcp 0 frame_size = 1904
+tcp 0 frame_size = 1280
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+tcp 0 frame_size = 1184
+udp 0 frame_size = 304
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+INFO: EVENT TYPE = 512
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 304
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+INFO: EVENT TYPE = 512
+INFO: EVENT TYPE = 512
+INFO: EVENT TYPE = 512
+INFO: EVENT TYPE = 512
+udp 0 frame_size = 13664
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9040
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 4080
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 7888
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9088
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9264
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+tcp 0 frame_size = 1328
+INFO: push_frame_udp
+udp 0 frame_size = 8768
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 8752
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9488
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9936
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8928
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9552
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8288
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9776
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 7664
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8624
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8816
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 10160
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+tcp 0 frame_size = 1520
+INFO: push_frame_udp
+udp 0 frame_size = 8880
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+INFO: push_frame_udp
+tcp 0 frame_size = 1440
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 11248
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8992
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 11280
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9152
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 11200
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12256
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 11408
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12880
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 15120
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 14528
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 18304
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+tcp 0 frame_size = 2400
+udp 0 frame_size = 14080
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 18512
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 14624
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 19296
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 15136
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 20208
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 15872
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 21168
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 26640
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 36560
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 29920
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 35312
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+tcp 0 frame_size = 2512
+udp 0 frame_size = 38720
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+INFO: push_frame_udp
+udp 0 frame_size = 38176
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 40768
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 31344
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 22992
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9712
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 18656
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9152
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 19200
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9280
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 20400
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 10304
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+tcp 0 frame_size = 4064
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 71104
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9136
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 16736
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 7392
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12400
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 8208
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 13024
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 9488
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 17360
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12432
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 21104
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 30688
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 23136
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+tcp 0 frame_size = 2016
+INFO: push_frame_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 38864
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 21312
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 38384
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 18208
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 29952
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 13488
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 21248
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12144
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 22928
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 12048
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 20896
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 17104
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+tcp 0 frame_size = 7520
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 26512
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 22832
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 36928
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 19536
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 32928
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 84992
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 35920
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 21824
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 31936
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 18096
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 25104
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 20672
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+tcp 0 frame_size = 5136
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 27280
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 18128
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 27504
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 2192
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+tcp 0 frame_size = 4496
+INFO: push_frame_udp
+udp 0 frame_size = 7632
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+INFO: push_frame_udp
+udp 0 frame_size = 13232
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 10848
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 16736
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 11328
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 17552
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 10608
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 17088
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+udp 0 frame_size = 11536
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+tcp 0 frame_size = 7520
+INFO: push_frame_udp
+INFO: EVENT TYPE = 32769
+INFO: frame_width = 1440, frame_height = 2620, format = 0
+udp 0 frame_size = 17792
+INFO: stream_push_packet_udp
+INFO: stream_parse_udp
+INFO: process_frame_udp
+INFO: decoder_push_udp
+INFO: push_frame_udp
+connection terminated by server.
+CRITICAL: Requested to kill -1, this is an error. Please report the bug.
+Aborted (core dumped)
+

@@ -15,6 +15,8 @@
 #include "util/buffer_util.h"
 #include "util/log.h"
 
+#define EVENT_NEW_FRAME_UDP 195
+
 // set the decoded frame as ready for rendering, and notify
 static void
 push_frame(struct decoder *decoder) {
@@ -27,6 +29,21 @@ push_frame(struct decoder *decoder) {
     }
     static SDL_Event new_frame_event = {
         .type = EVENT_NEW_FRAME,
+    };
+    SDL_PushEvent(&new_frame_event);
+}
+
+static void
+push_frame_udp(struct decoder *decoder) {
+    bool previous_frame_skipped;
+    video_buffer_offer_decoded_frame(decoder->video_buffer,
+                                     &previous_frame_skipped);
+    if (previous_frame_skipped) {
+        // the previous EVENT_NEW_FRAME will consume this frame
+        return;
+    }
+    static SDL_Event new_frame_event = {
+        .type = EVENT_NEW_FRAME_UDP,
     };
     SDL_PushEvent(&new_frame_event);
 }
@@ -69,11 +86,53 @@ decoder_push(struct decoder *decoder, const AVPacket *packet) {
         LOGE("Could not send video packet: %d", ret);
         return false;
     }
+    
     ret = avcodec_receive_frame(decoder->codec_ctx,
                                 decoder->video_buffer->decoding_frame);
+
     if (!ret) {
         // a frame was received
         push_frame(decoder);
+    } else if (ret != AVERROR(EAGAIN)) {
+        LOGE("Could not receive video frame: %d", ret);
+        return false;
+    }
+#else
+    int got_picture;
+    int len = avcodec_decode_video2(decoder->codec_ctx,
+                                    decoder->video_buffer->decoding_frame,
+                                    &got_picture,
+                                    packet);
+    if (len < 0) {
+        LOGE("Could not decode video packet: %d", len);
+        return false;
+    }
+    if (got_picture) {
+        push_frame(decoder);
+    }
+#endif
+    return true;
+}
+
+bool
+decoder_push_udp(struct decoder *decoder, const AVPacket *packet) {
+// the new decoding/encoding API has been introduced by:
+// <http://git.videolan.org/?p=ffmpeg.git;a=commitdiff;h=7fc329e2dd6226dfecaa4a1d7adf353bf2773726>
+#ifdef SCRCPY_LAVF_HAS_NEW_ENCODING_DECODING_API
+    int ret;
+    if ((ret = avcodec_send_packet(decoder->codec_ctx, packet)) < 0) {
+        LOGE("Could not send video packet: %d", ret);
+        return false;
+    }
+    
+    ret = avcodec_receive_frame(decoder->codec_ctx,
+                                decoder->video_buffer->decoding_frame);
+
+    LOGI("UDP receive frame ret = %d", ret);
+
+    if (!ret) {
+        // a frame was received
+        push_frame_udp(decoder);
     } else if (ret != AVERROR(EAGAIN)) {
         LOGE("Could not receive video frame: %d", ret);
         return false;

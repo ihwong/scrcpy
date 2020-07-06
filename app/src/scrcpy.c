@@ -40,6 +40,7 @@
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
+static struct screen screen2 = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
 static struct video_buffer video_buffer;
 static struct stream stream;
@@ -54,6 +55,13 @@ static struct input_manager input_manager = {
     .screen = &screen,
     .prefer_text = false, // initialized later
 };
+
+static struct fps_counter fps_counter_udp[5];
+static struct video_buffer video_buffer_udp[5];
+static struct stream stream_udp[5];
+static struct decoder decoder_udp[5];
+static struct recorder recorder_udp[5];
+int socket_udp[5];
 
 #ifdef _WIN32
 BOOL WINAPI windows_ctrl_handler(DWORD ctrl_type) {
@@ -162,6 +170,7 @@ enum event_result {
 
 static enum event_result
 handle_event(SDL_Event *event, bool control) {
+
     switch (event->type) {
         case EVENT_STREAM_STOPPED:
             LOGD("Video stream stopped");
@@ -170,6 +179,9 @@ handle_event(SDL_Event *event, bool control) {
             LOGD("User requested to quit");
             return EVENT_RESULT_STOPPED_BY_USER;
         case EVENT_NEW_FRAME:
+	    LOGI("TCP frame arrived!");
+	    LOGI("EVENT TYPE = %d", event->type);
+	    
             if (!screen.has_frame) {
                 screen.has_frame = true;
                 // this is the very first frame, show the window
@@ -178,7 +190,22 @@ handle_event(SDL_Event *event, bool control) {
             if (!screen_update_frame(&screen, &video_buffer)) {
                 return EVENT_RESULT_CONTINUE;
             }
+	    
             break;
+        case 195:
+	    LOGI("UDP frame arrived!");
+	    LOGI("EVENT TYPE = %d", event->type);
+	    	    LOGI("TCP frame arrived!");
+	    LOGI("EVENT TYPE = %d", event->type);
+            if (!screen2.has_frame) {
+                screen2.has_frame = true;
+                // this is the very first frame, show the window
+                screen_show_window(&screen2);
+            }
+            if (!screen_update_frame(&screen2, &video_buffer_udp[0])) {
+                return EVENT_RESULT_CONTINUE;
+            }
+	    break;
         case SDL_WINDOWEVENT:
             screen_handle_window_event(&screen, &event->window);
             break;
@@ -481,12 +508,6 @@ scrcpy(const struct scrcpy_options *options) {
     }
 
     /* UDP Sessions */
-    static struct fps_counter fps_counter_udp[5];
-    static struct video_buffer video_buffer_udp[5];
-    static struct stream stream_udp[5];
-    static struct decoder decoder_udp[5];
-    static struct recorder recorder_udp[5];
-    int socket_udp[5];
 
     struct decoder *dec_udp[5] = {NULL};
     for (int i = 0; i < 5; i++) {
@@ -504,6 +525,11 @@ scrcpy(const struct scrcpy_options *options) {
 	    decoder_init(&decoder_udp[i], &video_buffer_udp[i]);
 	    dec_udp[i] = &decoder_udp[i];
 	}
+    }
+
+    LOGI("hoyoung decoder = %p", dec);
+    for (int i = 0; i < 5; i++) {
+	LOGI("hoyoung decoder[%d] = %p", i, dec_udp[i]);
     }
 
     struct recoder *rec_udp[5] = {NULL};
@@ -526,11 +552,12 @@ scrcpy(const struct scrcpy_options *options) {
 
     // now we consumed the header values, the socket receives the video stream
     // start the stream
+    
     if (!stream_start(&stream)) {
         goto end;
     }
     stream_started = true;
-
+    
     /* UDP */
     for (int i = 0; i < parsed_idx; i++) {
 	stream_init_udp(&stream_udp[i], socket_udp[i], dec_udp[i], rec_udp[i], us[i].sessionPort, i);
@@ -568,6 +595,15 @@ scrcpy(const struct scrcpy_options *options) {
             goto end;
         }
 
+	if (!screen_init_rendering(&screen2, window_title, frame_size,
+                                   options->always_on_top, options->window_x,
+                                   options->window_y, options->window_width,
+                                   options->window_height,
+                                   options->window_borderless,
+                                   options->rotation, options-> mipmaps)) {
+            goto end;
+        }
+
         if (options->turn_screen_off) {
             struct control_msg msg;
             msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
@@ -584,7 +620,7 @@ scrcpy(const struct scrcpy_options *options) {
     }
 
     input_manager.prefer_text = options->prefer_text;
-
+    
     ret = event_loop(options->display, options->control);
     LOGD("quit...");
 

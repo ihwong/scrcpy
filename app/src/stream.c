@@ -147,7 +147,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
         packet->data[i] = frame_data[i];
     }
   
-    printf("frame_size = %u\n", frame_size);
+    printf("tcp 0 frame_size = %u\n", frame_size);
     packet->pts = AV_NOPTS_VALUE;
   
     return true;
@@ -270,7 +270,7 @@ stream_recv_packet_udp(struct stream *stream, AVPacket *packet) {
 	printf("%02x ", frame_data[i]);
     }
     */
-    printf("index %d frame_size = %u\n", stream->udp_index, frame_size);
+    printf("udp %d frame_size = %u\n", stream->udp_index, frame_size);
     packet->pts = AV_NOPTS_VALUE;
   
     return true;
@@ -311,6 +311,24 @@ process_frame(struct stream *stream, AVPacket *packet) {
 }
 
 static bool
+process_frame_udp(struct stream *stream, AVPacket *packet) {
+    if (stream->decoder && !decoder_push_udp(stream->decoder, packet)) {
+        return false;
+    }
+
+    if (stream->recorder) {
+        packet->dts = packet->pts;
+
+        if (!recorder_push(stream->recorder, packet)) {
+            LOGE("Could not send packet to recorder");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool
 stream_parse(struct stream *stream, AVPacket *packet) {
     uint8_t *in_data = packet->data;
     int in_len = packet->size;
@@ -330,6 +348,34 @@ stream_parse(struct stream *stream, AVPacket *packet) {
     }
 
     bool ok = process_frame(stream, packet);
+    if (!ok) {
+        LOGE("Could not process frame");
+        return false;
+    }
+
+    return true;
+}
+
+static bool
+stream_parse_udp(struct stream *stream, AVPacket *packet) {
+    uint8_t *in_data = packet->data;
+    int in_len = packet->size;
+    uint8_t *out_data = NULL;
+    int out_len = 0;
+    int r = av_parser_parse2(stream->parser, stream->codec_ctx,
+                             &out_data, &out_len, in_data, in_len,
+                             AV_NOPTS_VALUE, AV_NOPTS_VALUE, -1);
+
+    // PARSER_FLAG_COMPLETE_FRAMES is set
+    assert(r == in_len);
+    (void) r;
+    assert(out_len == in_len);
+
+    if (stream->parser->key_frame == 1) {
+        packet->flags |= AV_PKT_FLAG_KEY;
+    }
+
+    bool ok = process_frame_udp(stream, packet);
     if (!ok) {
         LOGE("Could not process frame");
         return false;
@@ -381,6 +427,63 @@ stream_push_packet(struct stream *stream, AVPacket *packet) {
     } else {
         // data packet
         bool ok = stream_parse(stream, packet);
+
+        if (stream->has_pending) {
+            // the pending packet must be discarded (consumed or error)
+            stream->has_pending = false;
+            av_packet_unref(&stream->pending);
+        }
+
+        if (!ok) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool
+stream_push_packet_udp(struct stream *stream, AVPacket *packet) {
+    bool is_config = false;
+
+    // A config packet must not be decoded immetiately (it contains no
+    // frame); instead, it must be concatenated with the future data packet.
+    if (stream->has_pending || is_config) {
+        size_t offset;
+        if (stream->has_pending) {
+            offset = stream->pending.size;
+            if (av_grow_packet(&stream->pending, packet->size)) {
+                LOGE("Could not grow packet");
+                return false;
+            }
+        } else {
+            offset = 0;
+            if (av_new_packet(&stream->pending, packet->size)) {
+                LOGE("Could not create packet");
+                return false;
+            }
+            stream->has_pending = true;
+        }
+
+        memcpy(stream->pending.data + offset, packet->data, packet->size);
+
+        if (!is_config) {
+            // prepare the concat packet to send to the decoder
+            stream->pending.pts = packet->pts;
+            stream->pending.dts = packet->dts;
+            stream->pending.flags = packet->flags;
+            packet = &stream->pending;
+        }
+    }
+
+    if (is_config) {
+        // config packet
+        bool ok = process_config_packet(stream, packet);
+        if (!ok) {
+            return false;
+        }
+    } else {
+        // data packet
+        bool ok = stream_parse_udp(stream, packet);
 
         if (stream->has_pending) {
             // the pending packet must be discarded (consumed or error)
@@ -535,15 +638,14 @@ run_stream_udp(void *data) {
             // end of stream
             break;
         }
-	
-        /*
-        ok = stream_push_packet(stream, &packet);
+
+        ok = stream_push_packet_udp(stream, &packet);
         av_packet_unref(&packet);
         if (!ok) {
             // cannot process packet (error already logged)
             break;
         }
-	*/
+	
     }
 
     LOGD("End of frames");
@@ -588,7 +690,17 @@ stream_init(struct stream *stream, socket_t msocket,
     server_addr.sin_port = htons(atoi("10000"));
 
     LOGI("video_socket connect() try\n");
-    while (connect(msocket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0);
+    for (int i = 0; i < 100; i++) {
+	int ret;
+	ret = connect(msocket, (struct sockaddr *)&server_addr, sizeof(server_addr));
+	if (ret < 0) {
+	    continue;
+	}
+	else {
+	    break;
+	}
+    }
+
     LOGI("video_socket connect() success\n");
     stream->socket = msocket;
     stream->decoder = decoder,

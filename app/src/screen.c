@@ -417,9 +417,7 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
             || screen->frame_size.height != new_frame_size.height) {
         // frame dimension changed, destroy texture
         SDL_DestroyTexture(screen->texture);
-
         screen->frame_size = new_frame_size;
-
         struct size new_content_size =
             get_rotated_size(new_frame_size, screen->rotation);
         set_content_size(screen, new_content_size);
@@ -428,7 +426,9 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
 
         LOGI("New texture: %" PRIu16 "x%" PRIu16,
                      screen->frame_size.width, screen->frame_size.height);
+
         screen->texture = create_texture(screen);
+
         if (!screen->texture) {
             LOGC("Could not create texture: %s", SDL_GetError());
             return false;
@@ -459,6 +459,8 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb) {
     mutex_lock(vb->mutex);
     const AVFrame *frame = video_buffer_consume_rendered_frame(vb);
     struct size new_frame_size = {frame->width, frame->height};
+    LOGI("frame_width = %d, frame_height = %d, format = %d", frame->width, frame->height, frame->format);
+    
     if (!prepare_for_frame(screen, new_frame_size)) {
         mutex_unlock(vb->mutex);
         return false;
