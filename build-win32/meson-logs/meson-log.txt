@@ -1,0 +1,199 @@
+Build started at 2020-07-07T17:54:04.353141
+Main binary: /usr/bin/python3
+Build Options: -Db_lto=true -Dcrossbuild_windows=true -Dcompile_server=false -Dportable=true -Dbuildtype=release -Dstrip=True '--cross-file cross_win32.txt'
+Python system: Linux
+The Meson build system
+Version: 0.54.2
+Source dir: /home/hwong/fluid/scrcpy_dual
+Build dir: /home/hwong/fluid/scrcpy_dual/build-win32
+Build type: cross build
+None of 'PKG_CONFIG_PATH_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'PKG_CONFIG_PATH' are defined in the environment, not changing global flags.
+Project name: scrcpy
+Project version: 1.14
+None of 'CC_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'CFLAGS_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'LDFLAGS_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'CC_LD_FOR_BUILD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+Sanity check compiler command line: cc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/sanitycheckc.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/sanitycheckc.exe
+C compiler for the build machine: cc (gcc 7.5.0 "cc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0")
+C linker for the build machine: cc ld.bfd 2.30
+None of 'AR_FOR_BUILD' are defined in the environment, not changing global flags.
+None of 'CFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: /usr/bin/i686-w64-mingw32-gcc
+Is cross compiler: True.
+Sanity check compiler command line: /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/sanitycheckc.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/sanitycheckc_cross.exe -pipe -c
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+C compiler for the host machine: /usr/bin/i686-w64-mingw32-gcc (gcc 7.3.0 "i686-w64-mingw32-gcc (GCC) 7.3-win32 20180312")
+C linker for the host machine: /usr/bin/i686-w64-mingw32-gcc ld.bfd 2.30
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86
+Host machine cpu: i686
+Target machine cpu family: x86
+Target machine cpu: i686
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpzkd_ad3x
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpzkd_ad3x/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpzkd_ad3x/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) {
+            void * something;
+            return 0;
+        }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpyl0xb_ph
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpyl0xb_ph/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpyl0xb_ph/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) >= 0)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp6q1qnw4w
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp6q1qnw4w/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp6q1qnw4w/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 0)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp42218m9h
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp42218m9h/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp42218m9h/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 1)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmplh3257uf
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmplh3257uf/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmplh3257uf/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 3)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpeh6t_9l7
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpeh6t_9l7/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpeh6t_9l7/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 7)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpeh6t_9l7/testfile.c: In function 'main':
+/home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpeh6t_9l7/testfile.c:3:37: error: size of array 'a' is negative
+         int main(void) { static int a[1-2*!(sizeof(void *) > 7)]; a[0]=0; return 0; }
+                                     ^
+
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmprqvagoxa
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmprqvagoxa/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmprqvagoxa/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) <= 5)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp7c0ll78p
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp7c0ll78p/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmp7c0ll78p/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) <= 4)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpr4rd248w
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpr4rd248w/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpr4rd248w/output.obj -pipe -c -O0 --print-search-dirs 
+
+Code:
+ 
+Compiler stdout:
+ install: /usr/lib/gcc/i686-w64-mingw32/7.3-win32/
+programs: =/usr/lib/gcc/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/../../../../i686-w64-mingw32/bin/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/../../../../i686-w64-mingw32/bin/
+libraries: =/usr/lib/gcc/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/../../../../i686-w64-mingw32/lib/i686-w64-mingw32/7.3-win32/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/../../../../i686-w64-mingw32/lib/../lib/:/usr/lib/gcc/i686-w64-mingw32/7.3-win32/../../../../i686-w64-mingw32/lib/
+
+Compiler stderr:
+ 
+Library SDL2 found: YES
+Library SDL2main found: YES
+Library avcodec-58 found: YES
+Library avformat-58 found: YES
+Library avutil-56 found: YES
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpavu24dwi
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpavu24dwi/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpavu24dwi/output.exe -pipe -O0 -Wl,--start-group -lmingw32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+
+Code:
+ int main(void) { return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library mingw32 found: YES
+Running compile:
+Working directory:  /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpuk9mptpv
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpuk9mptpv/testfile.c -o /home/hwong/fluid/scrcpy_dual/build-win32/meson-private/tmpuk9mptpv/output.exe -pipe -O0 -Wl,--start-group -lws2_32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+
+Code:
+ int main(void) { return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library ws2_32 found: YES
+Configuring config.h using configuration
+Build targets in project: 2
+
+Found ninja-1.8.2 at /usr/bin/ninja

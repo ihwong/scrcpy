@@ -180,7 +180,7 @@ handle_event(SDL_Event *event, bool control) {
             LOGD("User requested to quit");
             return EVENT_RESULT_STOPPED_BY_USER;
         case EVENT_NEW_FRAME:
-	    LOGI("TCP frame arrived!");
+	    // LOGI("TCP frame arrived!");
             if (!screen.has_frame) {
                 screen.has_frame = true;
                 // this is the very first frame, show the window
@@ -192,7 +192,7 @@ handle_event(SDL_Event *event, bool control) {
 	    
             break;
         case 195:
-	    LOGI("UDP frame arrived!");
+	    // LOGI("UDP frame arrived!");
             if (!screen_update_frame(&screen, &video_buffer_udp[0])) {
                 return EVENT_RESULT_CONTINUE;
             }

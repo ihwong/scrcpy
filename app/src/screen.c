@@ -474,7 +474,7 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 	afterimage = *frame;
     }
    
-    if (frame->height == 2620) {
+    if (frame->height > 810) {
 	SDL_UpdateYUVTexture(screen->texture, NULL,
 			     frame->data[0], frame->linesize[0],
 			     frame->data[1], frame->linesize[1],
