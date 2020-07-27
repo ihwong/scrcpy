@@ -43,12 +43,35 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buf[1] = msg->inject_keycode.action;
             buffer_write32be(&buf[2], msg->inject_keycode.keycode);
             buffer_write32be(&buf[6], msg->inject_keycode.metastate);
-            return 10;
+	    printf("%d %d %d %d\n", msg->type, msg->inject_keycode.action, msg->inject_keycode.keycode + 68, msg->inject_keycode.metastate);
+	    if ((buf[1] == 0) && (msg->inject_keycode.keycode == 67)) {
+		sprintf(buf, "key:delete,5\n");
+		printf("%s", buf);
+		return 13;
+	    }
+	    if ((buf[1] == 0) && (msg->inject_keycode.keycode == 62)) {
+		sprintf(buf, "key: ,5\n");
+		printf("%s", buf);
+		return 8;
+	    }
+	    if ((buf[1] == 0) && (msg->inject_keycode.metastate == 2097152)) { // abc
+		sprintf(buf, "key:%c,5\n", msg->inject_keycode.keycode + 68);
+		printf("%s", buf);
+		return 8;
+	    }
+	    if ((buf[1] == 0) && (msg->inject_keycode.metastate == 3145728)) { // ABC
+		sprintf(buf, "key:%c,5\n", msg->inject_keycode.keycode + 36);
+		printf("%s", buf);
+		return 8;
+	    }
+            return -1;
         case CONTROL_MSG_TYPE_INJECT_TEXT: {
             size_t len =
                 write_string(msg->inject_text.text,
                              CONTROL_MSG_INJECT_TEXT_MAX_LENGTH, &buf[1]);
-            return 1 + len;
+	    printf("%c\n", msg->inject_text.text[0]);
+	    sprintf(buf, "key:%c,5\n", msg->inject_text.text[0]);
+            return 8;
         }
         case CONTROL_MSG_TYPE_INJECT_TOUCH_EVENT:
             buf[1] = msg->inject_touch_event.action;

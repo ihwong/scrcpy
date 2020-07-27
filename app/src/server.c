@@ -137,7 +137,7 @@ disable_tunnel(struct server *server) {
 
 static socket_t
 listen_on_port(uint16_t port) {
-#define IPV4_LOCALHOST 0xC0A80066
+#define IPV4_LOCALHOST 0xC0A80070
     return net_listen(IPV4_LOCALHOST, port, 1);
 }
 

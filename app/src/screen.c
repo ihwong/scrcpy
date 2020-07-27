@@ -441,8 +441,8 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
 SDL_Rect whereToUpdate = {
     .x = 0,
     .y = 175,
-    .w = 1440,
-    .h = 810,
+    .w = 2000,
+    .h = 1130,
 };
 
 SDL_Rect whereToUpdate2 = {
@@ -458,6 +458,14 @@ AVFrame afterimage, afterimage2;
 static void
 update_texture(struct screen *screen, const AVFrame *frame) {
 
+    if (frame->height == 1130) {
+	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
+			     frame->data[0], frame->linesize[0],
+			     frame->data[1], frame->linesize[1],
+			     frame->data[2], frame->linesize[2]);
+	afterimage = *frame;
+    }
+
     if (frame->height == 90) {
 	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
 			     frame->data[0], frame->linesize[0],
@@ -465,16 +473,8 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 			     frame->data[2], frame->linesize[2]);
 	afterimage2 = *frame;
     }
-    
-    if (frame->height == 810) {
-	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
-			     frame->data[0], frame->linesize[0],
-			     frame->data[1], frame->linesize[1],
-			     frame->data[2], frame->linesize[2]);
-	afterimage = *frame;
-    }
-   
-    if (frame->height > 810) {
+     
+    if (frame->height == 3500) {
 	SDL_UpdateYUVTexture(screen->texture, NULL,
 			     frame->data[0], frame->linesize[0],
 			     frame->data[1], frame->linesize[1],
@@ -484,12 +484,12 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 			     afterimage.data[0], afterimage.linesize[0],
 			     afterimage.data[1], afterimage.linesize[1],
 			     afterimage.data[2], afterimage.linesize[2]);
-
+/*
 	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
 			     afterimage2.data[0], afterimage2.linesize[0],
 			     afterimage2.data[1], afterimage2.linesize[1],
 			     afterimage2.data[2], afterimage2.linesize[2]);
-	  
+*/	  
     }
 
     if (screen->mipmaps) {

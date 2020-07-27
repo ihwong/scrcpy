@@ -372,7 +372,7 @@ scrcpy(const struct scrcpy_options *options) {
     int idx = 0;
 
     LOGI("sending display info...\n");
-    send(server.control_socket, "display:1440.2620.560\n", sizeof(char) * 22, 0);
+    send(server.control_socket, "display:2000.3500.560\n", sizeof(char) * 22, 0);
     // 22 = strlen("display:1440.2620.560") + 1 for newline char
     LOGI("display info sent!\n");
     
@@ -579,8 +579,8 @@ scrcpy(const struct scrcpy_options *options) {
         const char *window_title =
             options->window_title ? options->window_title : device_name;
 
-        frame_size.width = 1440;
-        frame_size.height = 2620;
+        frame_size.width = 2000;
+        frame_size.height = 3500;
 
         if (!screen_init_rendering(&screen, window_title, frame_size,
                                    options->always_on_top, options->window_x,

@@ -147,7 +147,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
         packet->data[i] = frame_data[i];
     }
   
-    printf("tcp 0 frame_size = %u\n", frame_size);
+    // printf("tcp 0 frame_size = %u\n", frame_size);
     packet->pts = AV_NOPTS_VALUE;
   
     return true;
@@ -270,7 +270,7 @@ stream_recv_packet_udp(struct stream *stream, AVPacket *packet) {
 	printf("%02x ", frame_data[i]);
     }
     */
-    printf("udp %d frame_size = %u\n", stream->udp_index, frame_size);
+    // printf("udp %d frame_size = %u\n", stream->udp_index, frame_size);
     packet->pts = AV_NOPTS_VALUE;
   
     return true;
@@ -686,7 +686,7 @@ stream_init(struct stream *stream, socket_t msocket,
 
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("192.168.0.102");
+    server_addr.sin_addr.s_addr = inet_addr("192.168.0.112");
     server_addr.sin_port = htons(atoi("10000"));
 
     LOGI("video_socket connect() try\n");
