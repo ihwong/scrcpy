@@ -1,0 +1,214 @@
+Build started at 2020-12-29T03:11:59.181150
+Main binary: /usr/bin/python3
+Build Options: -Db_lto=true -Dcrossbuild_windows=true -Dcompile_server=false -Dportable=true -Dbuildtype=release -Dstrip=True '--cross-file cross_win64.txt'
+Python system: Linux
+The Meson build system
+Version: 0.53.2
+Source dir: /home/hwong/scrcpy_lin
+Build dir: /home/hwong/scrcpy_lin/build-win64
+Build type: cross build
+Project name: scrcpy
+Project version: 1.14
+No CFLAGS in the environment, not changing global flags.
+No LDFLAGS in the environment, not changing global flags.
+No CPPFLAGS in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+Sanity check compiler command line: cc /home/hwong/scrcpy_lin/build-win64/meson-private/sanitycheckc.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/hwong/scrcpy_lin/build-win64/meson-private/sanitycheckc.exe
+C compiler for the build machine: cc (gcc 9.3.0 "cc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0")
+C linker for the build machine: cc ld.bfd 2.34
+Sanity testing C compiler: /usr/bin/x86_64-w64-mingw32-gcc
+Is cross compiler: True.
+Sanity check compiler command line: /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/sanitycheckc.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/sanitycheckc_cross.exe -pipe -c
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+C compiler for the host machine: /usr/bin/x86_64-w64-mingw32-gcc (gcc 9.3.0 "x86_64-w64-mingw32-gcc (GCC) 9.3-win32 20200320")
+C linker for the host machine: /usr/bin/x86_64-w64-mingw32-gcc ld.bfd 2.34
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86
+Host machine cpu: x86_64
+Target machine cpu family: x86
+Target machine cpu: x86_64
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmptp94yd40
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmptp94yd40/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmptp94yd40/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) {
+            void * something;
+            return 0;
+        }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpltmnagdo
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpltmnagdo/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpltmnagdo/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) >= 0)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpid5kt5li
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpid5kt5li/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpid5kt5li/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 0)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpgmgm4juc
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpgmgm4juc/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpgmgm4juc/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 1)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmppxd5lo0g
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmppxd5lo0g/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmppxd5lo0g/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 3)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1rp3pv6t
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1rp3pv6t/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1rp3pv6t/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 7)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpkhxhbgwt
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpkhxhbgwt/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpkhxhbgwt/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) > 15)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ /home/hwong/scrcpy_lin/build-win64/meson-private/tmpkhxhbgwt/testfile.c: In function 'main':
+/home/hwong/scrcpy_lin/build-win64/meson-private/tmpkhxhbgwt/testfile.c:3:37: error: size of array 'a' is negative
+    3 |         int main(void) { static int a[1-2*!(sizeof(void *) > 15)]; a[0]=0; return 0; }
+      |                                     ^
+
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmposodo46p
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmposodo46p/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmposodo46p/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) <= 11)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpp7c730co
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpp7c730co/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpp7c730co/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) <= 9)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmp5n6z8j64
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmp5n6z8j64/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmp5n6z8j64/output.obj -pipe -c -O0 
+
+Code:
+ #include <stdio.h>
+        
+        int main(void) { static int a[1-2*!(sizeof(void *) <= 8)]; a[0]=0; return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmpvh4q05c9
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmpvh4q05c9/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmpvh4q05c9/output.obj -pipe -c -O0 --print-search-dirs 
+
+Code:
+ 
+Compiler stdout:
+ install: /usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/
+programs: =/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/../../../../x86_64-w64-mingw32/bin/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/../../../../x86_64-w64-mingw32/bin/
+libraries: =/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/../../../../x86_64-w64-mingw32/lib/x86_64-w64-mingw32/9.3-win32/:/usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/../../../../x86_64-w64-mingw32/lib/
+
+Compiler stderr:
+ 
+Library SDL2 found: YES
+Library SDL2main found: YES
+Library avcodec-58 found: YES
+Library avformat-58 found: YES
+Library avutil-56 found: YES
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1n45l6qb
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1n45l6qb/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmp1n45l6qb/output.exe -pipe -O0 -Wl,--start-group -lmingw32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+
+Code:
+ int main(void) { return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library mingw32 found: YES
+Running compile:
+Working directory:  /home/hwong/scrcpy_lin/build-win64/meson-private/tmps9k7691l
+Command line:  /usr/bin/x86_64-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win64/meson-private/tmps9k7691l/testfile.c -o /home/hwong/scrcpy_lin/build-win64/meson-private/tmps9k7691l/output.exe -pipe -O0 -Wl,--start-group -lws2_32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+
+Code:
+ int main(void) { return 0; }
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Library ws2_32 found: YES
+Configuring config.h using configuration
+Build targets in project: 2
+
+Found ninja-1.10.0 at /usr/bin/ninja

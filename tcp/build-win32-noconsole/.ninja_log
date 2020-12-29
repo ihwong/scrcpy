@@ -1,0 +1,26 @@
+# ninja log v5
+2	90	1609229513865137095	app/a172ced@@scrcpy@exe/src_control_msg.c.obj	d7f8376c4f0f2cd5
+4	155	1609229513929135135	app/a172ced@@scrcpy@exe/src_decoder.c.obj	96b0541d051faf96
+155	226	1609229514001132930	app/a172ced@@scrcpy@exe/src_device_msg.c.obj	ac64434d09802c57
+226	311	1609229514085130358	app/a172ced@@scrcpy@exe/src_event_converter.c.obj	9b4578955bf21025
+1	456	1609229514217126316	app/a172ced@@scrcpy@exe/src_command.c.obj	117595a322a88423
+456	538	1609229514313123376	app/a172ced@@scrcpy@exe/src_fps_counter.c.obj	4533e118561edb20
+90	618	1609229514389121048	app/a172ced@@scrcpy@exe/src_device.c.obj	b7446dcac775279b
+311	834	1609229514605114435	app/a172ced@@scrcpy@exe/src_file_handler.c.obj	7e69c0c45aebe280
+4	851	1609229514621113945	app/a172ced@@scrcpy@exe/src_controller.c.obj	3ba8d6b4bf36742c
+851	963	1609229514737110393	app/a172ced@@scrcpy@exe/src_recorder.c.obj	e5bcad1a6f70c530
+0	990	1609229514761109658	app/a172ced@@scrcpy@exe/src_cli.c.obj	4ffb2baf5cd08efa
+0	1023	1609229514789108800	app/a172ced@@scrcpy@exe/src_main.c.obj	222b271226766c7
+618	1237	1609229515009102063	app/a172ced@@scrcpy@exe/src_opengl.c.obj	4ec1ca3d611eae61
+834	1463	1609229515237095082	app/a172ced@@scrcpy@exe/src_receiver.c.obj	589f5f239e90a706
+990	1531	1609229515301093122	app/a172ced@@scrcpy@exe/src_screen.c.obj	27c95b04d777acf0
+1023	1548	1609229515305093000	app/a172ced@@scrcpy@exe/src_server.c.obj	c97bfc56590cc42b
+1531	1662	1609229515437088957	app/a172ced@@scrcpy@exe/src_video_buffer.c.obj	b88faa964941a199
+1237	1869	1609229515641082711	app/a172ced@@scrcpy@exe/src_stream.c.obj	3ac33acd9befe4bc
+538	1933	1609229515701080873	app/a172ced@@scrcpy@exe/src_input_manager.c.obj	4320cdc7308dbf35
+1463	1978	1609229515749079404	app/a172ced@@scrcpy@exe/src_tiny_xpm.c.obj	ea53672ca1b70479
+963	1998	1609229515765078914	app/a172ced@@scrcpy@exe/src_scrcpy.c.obj	8321da3f0222d6f0
+1662	2147	1609229515921074137	app/a172ced@@scrcpy@exe/src_util_str_util.c.obj	dbb2e2de09eb25bf
+1548	2173	1609229515945073402	app/a172ced@@scrcpy@exe/src_util_net.c.obj	8778111fb2e8960e
+1869	2305	1609229516077069360	app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj	1a84a093ea43b0ed
+2305	3016	1609229516789047559	app/scrcpy.exe	4328b5c2020711cf
