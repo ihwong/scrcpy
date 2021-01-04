@@ -1,0 +1,61 @@
+Build started at 2020-07-07T17:53:46.655256
+Main binary: /usr/bin/python3
+Build Options: -Dcompile_app=false -Dbuildtype=release
+Python system: Linux
+The Meson build system
+Version: 0.54.2
+Source dir: /home/hwong/fluid/scrcpy_dual
+Build dir: /home/hwong/fluid/scrcpy_dual/build-server
+Build type: native build
+None of 'PKG_CONFIG_PATH' are defined in the environment, not changing global flags.
+None of 'PKG_CONFIG_PATH' are defined in the environment, not changing global flags.
+Project name: scrcpy
+Project version: 1.14
+None of 'CC' are defined in the environment, not changing global flags.
+None of 'CFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+Sanity check compiler command line: cc /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.c -o /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.exe
+C compiler for the build machine: cc (gcc 7.5.0 "cc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0")
+C linker for the build machine: cc ld.bfd 2.30
+None of 'AR' are defined in the environment, not changing global flags.
+None of 'CC' are defined in the environment, not changing global flags.
+None of 'CFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+None of 'CC_LD' are defined in the environment, not changing global flags.
+Sanity testing C compiler: cc
+Is cross compiler: False.
+Sanity check compiler command line: cc /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.c -o /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/hwong/fluid/scrcpy_dual/build-server/meson-private/sanitycheckc.exe
+C compiler for the host machine: cc (gcc 7.5.0 "cc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0")
+C linker for the host machine: cc ld.bfd 2.30
+None of 'AR' are defined in the environment, not changing global flags.
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Target machine cpu family: x86_64
+Target machine cpu: x86_64
+Program ./scripts/build-wrapper.sh found: YES (/home/hwong/fluid/scrcpy_dual/server/./scripts/build-wrapper.sh)
+Build targets in project: 2
+
+Found ninja-1.8.2 at /usr/bin/ninja
+None of 'STRIP' are defined in the environment, not changing global flags.
+None of 'STRIP' are defined in the environment, not changing global flags.

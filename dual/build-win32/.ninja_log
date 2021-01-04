@@ -1,0 +1,23 @@
+# ninja log v5
+1	32	1594112044	app/a172ced@@scrcpy@exe/src_device_msg.c.obj	565afa1915df55a1
+0	55	1594112044	app/a172ced@@scrcpy@exe/src_control_msg.c.obj	1adb95e3c967dc74
+1	64	1594112044	app/a172ced@@scrcpy@exe/src_event_converter.c.obj	4d49642ee0837e8e
+1	72	1594112044	app/a172ced@@scrcpy@exe/src_fps_counter.c.obj	7b960f3b8925f786
+0	99	1594112044	app/a172ced@@scrcpy@exe/src_decoder.c.obj	da3c724b332ca7ea
+3	149	1594112044	app/a172ced@@scrcpy@exe/src_recorder.c.obj	8bca6d618f44252c
+64	239	1594112044	app/a172ced@@scrcpy@exe/src_video_buffer.c.obj	4e5dc0c3c6ccc09e
+2	411	1594112044	app/a172ced@@scrcpy@exe/src_opengl.c.obj	65c974b8d61d69cd
+56	501	1594112045	app/a172ced@@scrcpy@exe/src_tiny_xpm.c.obj	dc13b9d495eccb00
+1	560	1594112045	app/a172ced@@scrcpy@exe/src_device.c.obj	6d0e1f04ad7bde99
+2	591	1594112045	app/a172ced@@scrcpy@exe/src_receiver.c.obj	7523366f12a99ee0
+0	607	1594112045	app/a172ced@@scrcpy@exe/src_controller.c.obj	e865bb1cc67b710f
+1	611	1594112045	app/a172ced@@scrcpy@exe/src_file_handler.c.obj	6ddd3969e0158b92
+0	628	1594112045	app/a172ced@@scrcpy@exe/src_command.c.obj	8ad4a0004ede3ecd
+72	648	1594112045	app/a172ced@@scrcpy@exe/src_util_net.c.obj	28a9634fc2c6a6cc
+3	656	1594112045	app/a172ced@@scrcpy@exe/src_screen.c.obj	fa3be4c99f70eea1
+6	659	1594112045	app/a172ced@@scrcpy@exe/src_server.c.obj	15512d66310098b9
+99	710	1594112045	app/a172ced@@scrcpy@exe/src_util_str_util.c.obj	c30588030f4ee5b3
+149	714	1594112045	app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj	4c03d4a2a09af1e1
+0	816	1594112045	app/a172ced@@scrcpy@exe/src_main.c.obj	77b4878c3ed2e3c3
+0	853	1594112045	app/a172ced@@scrcpy@exe/src_cli.c.obj	50d5ba29ecd3a679
+1	896	1594112045	app/a172ced@@scrcpy@exe/src_input_manager.c.obj	c41569050d312f8a
