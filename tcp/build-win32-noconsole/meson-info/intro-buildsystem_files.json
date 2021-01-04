@@ -1,1 +1,1 @@
-["/home/hwong/scrcpy_lin/meson.build", "/home/hwong/scrcpy_lin/meson_options.txt", "/home/hwong/scrcpy_lin/app/meson.build", "/home/hwong/scrcpy_lin/server/meson.build"]
+["/home/hwong/scrcpy/tcp/meson.build", "/home/hwong/scrcpy/tcp/meson_options.txt", "/home/hwong/scrcpy/tcp/app/meson.build", "/home/hwong/scrcpy/tcp/server/meson.build"]

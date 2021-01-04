@@ -1,11 +1,11 @@
-Build started at 2020-12-29T03:11:50.021059
+Build started at 2020-12-29T03:32:13.636533
 Main binary: /usr/bin/python3
 Build Options: -Db_lto=true -Dcrossbuild_windows=true -Dcompile_server=false -Dportable=true -Dbuildtype=release -Dstrip=True '--cross-file cross_win32.txt'
 Python system: Linux
 The Meson build system
 Version: 0.53.2
-Source dir: /home/hwong/scrcpy_lin
-Build dir: /home/hwong/scrcpy_lin/build-win32
+Source dir: /home/hwong/scrcpy/tcp
+Build dir: /home/hwong/scrcpy/tcp/build-win32
 Build type: cross build
 Project name: scrcpy
 Project version: 1.14
@@ -14,19 +14,19 @@ No LDFLAGS in the environment, not changing global flags.
 No CPPFLAGS in the environment, not changing global flags.
 Sanity testing C compiler: cc
 Is cross compiler: False.
-Sanity check compiler command line: cc /home/hwong/scrcpy_lin/build-win32/meson-private/sanitycheckc.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
+Sanity check compiler command line: cc /home/hwong/scrcpy/tcp/build-win32/meson-private/sanitycheckc.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/sanitycheckc.exe -pipe -D_FILE_OFFSET_BITS=64
 Sanity check compile stdout:
 
 -----
 Sanity check compile stderr:
 
 -----
-Running test binary command: /home/hwong/scrcpy_lin/build-win32/meson-private/sanitycheckc.exe
+Running test binary command: /home/hwong/scrcpy/tcp/build-win32/meson-private/sanitycheckc.exe
 C compiler for the build machine: cc (gcc 9.3.0 "cc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0")
 C linker for the build machine: cc ld.bfd 2.34
 Sanity testing C compiler: /usr/bin/i686-w64-mingw32-gcc
 Is cross compiler: True.
-Sanity check compiler command line: /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/sanitycheckc.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/sanitycheckc_cross.exe -pipe -c
+Sanity check compiler command line: /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/sanitycheckc.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/sanitycheckc_cross.exe -pipe -c
 Sanity check compile stdout:
 
 -----
@@ -42,8 +42,8 @@ Host machine cpu: i686
 Target machine cpu family: x86
 Target machine cpu: i686
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpvhtzhag7
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpvhtzhag7/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpvhtzhag7/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpqatbwegp
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpqatbwegp/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpqatbwegp/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -57,8 +57,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqzz7uadh
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqzz7uadh/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqzz7uadh/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0686ojcd
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0686ojcd/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0686ojcd/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -69,8 +69,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmph3sgs3ph
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmph3sgs3ph/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmph3sgs3ph/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpcmd9y9g8
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpcmd9y9g8/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpcmd9y9g8/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -81,8 +81,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmp05mzs5we
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmp05mzs5we/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmp05mzs5we/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpssijs_na
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpssijs_na/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpssijs_na/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -93,8 +93,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpwzdha8_z
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpwzdha8_z/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpwzdha8_z/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0qkmhflg
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0qkmhflg/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp0qkmhflg/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -105,8 +105,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpozcqzqgu
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpozcqzqgu/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpozcqzqgu/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp3tzfs0pz
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp3tzfs0pz/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp3tzfs0pz/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -115,14 +115,14 @@ Code:
 Compiler stdout:
  
 Compiler stderr:
- /home/hwong/scrcpy_lin/build-win32/meson-private/tmpozcqzqgu/testfile.c: In function 'main':
-/home/hwong/scrcpy_lin/build-win32/meson-private/tmpozcqzqgu/testfile.c:3:37: error: size of array 'a' is negative
+ /home/hwong/scrcpy/tcp/build-win32/meson-private/tmp3tzfs0pz/testfile.c: In function 'main':
+/home/hwong/scrcpy/tcp/build-win32/meson-private/tmp3tzfs0pz/testfile.c:3:37: error: size of array 'a' is negative
     3 |         int main(void) { static int a[1-2*!(sizeof(void *) > 7)]; a[0]=0; return 0; }
       |                                     ^
 
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpjf6b500x
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpjf6b500x/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpjf6b500x/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpkuexctmn
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpkuexctmn/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpkuexctmn/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -133,8 +133,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqi60u547
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqi60u547/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpqi60u547/output.obj -pipe -c -O0 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpdnxo5_dc
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpdnxo5_dc/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpdnxo5_dc/output.obj -pipe -c -O0 
 
 Code:
  #include <stdio.h>
@@ -145,8 +145,8 @@ Compiler stdout:
 Compiler stderr:
  
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmp87gosah9
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmp87gosah9/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmp87gosah9/output.obj -pipe -c -O0 --print-search-dirs 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpo_bc1zay
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpo_bc1zay/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpo_bc1zay/output.obj -pipe -c -O0 --print-search-dirs 
 
 Code:
  
@@ -163,8 +163,8 @@ Library avcodec-58 found: YES
 Library avformat-58 found: YES
 Library avutil-56 found: YES
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmpuknbe9z_
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmpuknbe9z_/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmpuknbe9z_/output.exe -pipe -O0 -Wl,--start-group -lmingw32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpr5ok_qhi
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpr5ok_qhi/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpr5ok_qhi/output.exe -pipe -O0 -Wl,--start-group -lmingw32 -Wl,--end-group -Wl,--allow-shlib-undefined 
 
 Code:
  int main(void) { return 0; }
@@ -174,8 +174,8 @@ Compiler stderr:
  
 Library mingw32 found: YES
 Running compile:
-Working directory:  /home/hwong/scrcpy_lin/build-win32/meson-private/tmp7s_xkkcy
-Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy_lin/build-win32/meson-private/tmp7s_xkkcy/testfile.c -o /home/hwong/scrcpy_lin/build-win32/meson-private/tmp7s_xkkcy/output.exe -pipe -O0 -Wl,--start-group -lws2_32 -Wl,--end-group -Wl,--allow-shlib-undefined 
+Working directory:  /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpljjjac64
+Command line:  /usr/bin/i686-w64-mingw32-gcc /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpljjjac64/testfile.c -o /home/hwong/scrcpy/tcp/build-win32/meson-private/tmpljjjac64/output.exe -pipe -O0 -Wl,--start-group -lws2_32 -Wl,--end-group -Wl,--allow-shlib-undefined 
 
 Code:
  int main(void) { return 0; }

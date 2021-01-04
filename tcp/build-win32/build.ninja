@@ -26,7 +26,7 @@ rule CUSTOM_COMMAND
  restat = 1
 
 rule REGENERATE_BUILD
- command = /usr/bin/meson --internal regenerate /home/hwong/scrcpy_lin /home/hwong/scrcpy_lin/build-win32 --backend ninja
+ command = /usr/bin/meson --internal regenerate /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/build-win32 --backend ninja
  description = Regenerating build files.
  generator = 1
 
@@ -132,13 +132,13 @@ build app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj: c_COMPILER ../app/src/s
  DEPFILE = app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj.d
  ARGS = -Iapp/a172ced@@scrcpy@exe -Iapp -I../app -I../app/src -I../app/../prebuilt-deps/ffmpeg-4.2.2-win32-dev/include -I../app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/include -flto -fdiagnostics-color=always -pipe -Wall -Winvalid-pch -Wextra -std=c11 -O3
 
-build app/scrcpy.exe: c_LINKER app/a172ced@@scrcpy@exe/src_main.c.obj app/a172ced@@scrcpy@exe/src_cli.c.obj app/a172ced@@scrcpy@exe/src_command.c.obj app/a172ced@@scrcpy@exe/src_control_msg.c.obj app/a172ced@@scrcpy@exe/src_controller.c.obj app/a172ced@@scrcpy@exe/src_decoder.c.obj app/a172ced@@scrcpy@exe/src_device.c.obj app/a172ced@@scrcpy@exe/src_device_msg.c.obj app/a172ced@@scrcpy@exe/src_event_converter.c.obj app/a172ced@@scrcpy@exe/src_file_handler.c.obj app/a172ced@@scrcpy@exe/src_fps_counter.c.obj app/a172ced@@scrcpy@exe/src_input_manager.c.obj app/a172ced@@scrcpy@exe/src_opengl.c.obj app/a172ced@@scrcpy@exe/src_receiver.c.obj app/a172ced@@scrcpy@exe/src_recorder.c.obj app/a172ced@@scrcpy@exe/src_scrcpy.c.obj app/a172ced@@scrcpy@exe/src_screen.c.obj app/a172ced@@scrcpy@exe/src_server.c.obj app/a172ced@@scrcpy@exe/src_stream.c.obj app/a172ced@@scrcpy@exe/src_tiny_xpm.c.obj app/a172ced@@scrcpy@exe/src_video_buffer.c.obj app/a172ced@@scrcpy@exe/src_util_net.c.obj app/a172ced@@scrcpy@exe/src_util_str_util.c.obj app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj | /usr/i686-w64-mingw32/lib/libmingw32.a /usr/i686-w64-mingw32/lib/libws2_32.a /usr/i686-w64-mingw32/lib/libkernel32.a /usr/i686-w64-mingw32/lib/libuser32.a /usr/i686-w64-mingw32/lib/libgdi32.a /usr/i686-w64-mingw32/lib/libwinspool.a /usr/i686-w64-mingw32/lib/libshell32.a /usr/i686-w64-mingw32/lib/libole32.a /usr/i686-w64-mingw32/lib/liboleaut32.a /usr/i686-w64-mingw32/lib/libuuid.a /usr/i686-w64-mingw32/lib/libcomdlg32.a /usr/i686-w64-mingw32/lib/libadvapi32.a /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avcodec-58.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avformat-58.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avutil-56.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/bin/SDL2.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/lib/libSDL2main.a
- LINK_ARGS = -flto -Wl,--allow-shlib-undefined -Wl,-O1 /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avcodec-58.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avformat-58.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avutil-56.dll /home/hwong/scrcpy_lin/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/bin/SDL2.dll -Wl,--start-group /home/hwong/scrcpy_lin/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/lib/libSDL2main.a -lmingw32 -lws2_32 -mconsole -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -Wl,--end-group
+build app/scrcpy.exe: c_LINKER app/a172ced@@scrcpy@exe/src_main.c.obj app/a172ced@@scrcpy@exe/src_cli.c.obj app/a172ced@@scrcpy@exe/src_command.c.obj app/a172ced@@scrcpy@exe/src_control_msg.c.obj app/a172ced@@scrcpy@exe/src_controller.c.obj app/a172ced@@scrcpy@exe/src_decoder.c.obj app/a172ced@@scrcpy@exe/src_device.c.obj app/a172ced@@scrcpy@exe/src_device_msg.c.obj app/a172ced@@scrcpy@exe/src_event_converter.c.obj app/a172ced@@scrcpy@exe/src_file_handler.c.obj app/a172ced@@scrcpy@exe/src_fps_counter.c.obj app/a172ced@@scrcpy@exe/src_input_manager.c.obj app/a172ced@@scrcpy@exe/src_opengl.c.obj app/a172ced@@scrcpy@exe/src_receiver.c.obj app/a172ced@@scrcpy@exe/src_recorder.c.obj app/a172ced@@scrcpy@exe/src_scrcpy.c.obj app/a172ced@@scrcpy@exe/src_screen.c.obj app/a172ced@@scrcpy@exe/src_server.c.obj app/a172ced@@scrcpy@exe/src_stream.c.obj app/a172ced@@scrcpy@exe/src_tiny_xpm.c.obj app/a172ced@@scrcpy@exe/src_video_buffer.c.obj app/a172ced@@scrcpy@exe/src_util_net.c.obj app/a172ced@@scrcpy@exe/src_util_str_util.c.obj app/a172ced@@scrcpy@exe/src_sys_win_command.c.obj | /usr/i686-w64-mingw32/lib/libmingw32.a /usr/i686-w64-mingw32/lib/libws2_32.a /usr/i686-w64-mingw32/lib/libkernel32.a /usr/i686-w64-mingw32/lib/libuser32.a /usr/i686-w64-mingw32/lib/libgdi32.a /usr/i686-w64-mingw32/lib/libwinspool.a /usr/i686-w64-mingw32/lib/libshell32.a /usr/i686-w64-mingw32/lib/libole32.a /usr/i686-w64-mingw32/lib/liboleaut32.a /usr/i686-w64-mingw32/lib/libuuid.a /usr/i686-w64-mingw32/lib/libcomdlg32.a /usr/i686-w64-mingw32/lib/libadvapi32.a /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avcodec-58.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avformat-58.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avutil-56.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/bin/SDL2.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/lib/libSDL2main.a
+ LINK_ARGS = -flto -Wl,--allow-shlib-undefined -Wl,-O1 /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avcodec-58.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avformat-58.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/ffmpeg-4.2.2-win32-shared/bin/avutil-56.dll /home/hwong/scrcpy/tcp/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/bin/SDL2.dll -Wl,--start-group /home/hwong/scrcpy/tcp/app/../prebuilt-deps/SDL2-2.0.12/i686-w64-mingw32/lib/libSDL2main.a -lmingw32 -lws2_32 -mconsole -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 -Wl,--end-group
 
 build run: phony meson-run
 
 build meson-run: CUSTOM_COMMAND 
- COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/scrcpy_lin /home/hwong/scrcpy_lin/build-win32 '' /usr/bin/meson scripts/run-scrcpy.sh
+ COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/build-win32 '' /usr/bin/meson scripts/run-scrcpy.sh
  description = Running$ external$ command$ run.
  pool = console
 
@@ -190,13 +190,13 @@ build meson-clean: CUSTOM_COMMAND PHONY
  COMMAND = /usr/bin/ninja -t clean
  description = Cleaning.
 
-build build.ninja: REGENERATE_BUILD ../meson.build ../app/meson.build /home/hwong/scrcpy_lin/cross_win32.txt meson-private/coredata.dat ../meson_options.txt
+build build.ninja: REGENERATE_BUILD ../meson.build ../app/meson.build /home/hwong/scrcpy/tcp/cross_win32.txt meson-private/coredata.dat ../meson_options.txt
  pool = console
 
 build reconfigure: REGENERATE_BUILD PHONY
  pool = console
 
-build ../meson.build ../app/meson.build /home/hwong/scrcpy_lin/cross_win32.txt meson-private/coredata.dat ../meson_options.txt: phony 
+build ../meson.build ../app/meson.build /home/hwong/scrcpy/tcp/cross_win32.txt meson-private/coredata.dat ../meson_options.txt: phony 
 
 default all
 

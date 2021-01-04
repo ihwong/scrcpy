@@ -33,7 +33,7 @@
 #include "util/net.h"
 
 #include <sys/types.h>
-// #include <sys/socket.h>
+#include <sys/socket.h>
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;

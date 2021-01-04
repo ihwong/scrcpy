@@ -16,7 +16,7 @@ rule CUSTOM_COMMAND
  restat = 1
 
 rule REGENERATE_BUILD
- command = /usr/bin/meson --internal regenerate /home/hwong/scrcpy_lin /home/hwong/scrcpy_lin/build-server --backend ninja
+ command = /usr/bin/meson --internal regenerate /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/build-server --backend ninja
  description = Regenerating build files.
  generator = 1
 
@@ -26,15 +26,15 @@ build PHONY: phony
 
 # Build rules for targets
 
-build server/scrcpy-server: CUSTOM_COMMAND  | /home/hwong/scrcpy_lin/server/./scripts/build-wrapper.sh PHONY
+build server/scrcpy-server: CUSTOM_COMMAND  | /home/hwong/scrcpy/tcp/server/./scripts/build-wrapper.sh PHONY
  pool = console
- COMMAND = /home/hwong/scrcpy_lin/server/./scripts/build-wrapper.sh /home/hwong/scrcpy_lin/server server/scrcpy-server release
+ COMMAND = /home/hwong/scrcpy/tcp/server/./scripts/build-wrapper.sh /home/hwong/scrcpy/tcp/server server/scrcpy-server release
  description = Generating$ scrcpy-server$ with$ a$ custom$ command.
 
 build run: phony meson-run
 
 build meson-run: CUSTOM_COMMAND 
- COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/scrcpy_lin /home/hwong/scrcpy_lin/build-server '' /usr/bin/meson scripts/run-scrcpy.sh
+ COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/build-server '' /usr/bin/meson scripts/run-scrcpy.sh
  description = Running$ external$ command$ run.
  pool = console
 
@@ -83,7 +83,7 @@ build all: phony server/scrcpy-server
 build clean: phony meson-clean
 
 build meson-clean-ctlist: CUSTOM_COMMAND PHONY
- COMMAND = /usr/bin/meson --internal cleantrees /home/hwong/scrcpy_lin/build-server/meson-private/cleantrees.dat
+ COMMAND = /usr/bin/meson --internal cleantrees /home/hwong/scrcpy/tcp/build-server/meson-private/cleantrees.dat
  description = Cleaning$ custom$ target$ directories.
 
 build clean-ctlist: phony meson-clean-ctlist
