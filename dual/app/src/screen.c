@@ -13,6 +13,8 @@
 #include "util/lock.h"
 #include "util/log.h"
 
+#include <libavfilter/avfilter.h>
+
 #define DISPLAY_MARGINS 96
 
 static inline struct size
@@ -457,7 +459,6 @@ AVFrame afterimage, afterimage2;
 // write the frame into the texture
 static void
 update_texture(struct screen *screen, const AVFrame *frame) {
-
     if (frame->height == 810) {
 	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
 			     frame->data[0], frame->linesize[0],
@@ -473,7 +474,7 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 			     frame->data[2], frame->linesize[2]);
 	afterimage2 = *frame;
     }
-     
+
     if (frame->height == 2990) {
 	SDL_UpdateYUVTexture(screen->texture, NULL,
 			     frame->data[0], frame->linesize[0],
@@ -484,12 +485,12 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 			     afterimage.data[0], afterimage.linesize[0],
 			     afterimage.data[1], afterimage.linesize[1],
 			     afterimage.data[2], afterimage.linesize[2]);
-/*
+
 	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
 			     afterimage2.data[0], afterimage2.linesize[0],
 			     afterimage2.data[1], afterimage2.linesize[1],
 			     afterimage2.data[2], afterimage2.linesize[2]);
-*/	  
+	  
     }
 
     if (screen->mipmaps) {
@@ -502,11 +503,22 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 }
 
 bool
-screen_update_frame(struct screen *screen, struct video_buffer *vb) {
+screen_update_frame(struct screen *screen, struct video_buffer *vb, int flag) {
     mutex_lock(vb->mutex);
-    const AVFrame *frame = video_buffer_consume_rendered_frame(vb);
+    /*const */AVFrame *frame = video_buffer_consume_rendered_frame(vb);
     // struct size new_frame_size = {frame->width, frame->height};
-    // LOGI("frame_width = %d, frame_height = %d, format = %d", frame->width, frame->height, frame->format);
+    LOGI("frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    if (flag == 0) {
+    	frame->crop_bottom = 2180;
+    	av_frame_apply_cropping(frame, 0);
+    	LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    }
+    
+    if (flag == 1) {
+    	frame->crop_bottom = 2920;
+    	av_frame_apply_cropping(frame, 0);
+    	LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    }
 
     /*
     if (!prepare_for_frame(screen, new_frame_size)) {

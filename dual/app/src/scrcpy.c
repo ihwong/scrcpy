@@ -186,17 +186,17 @@ handle_event(SDL_Event *event, bool control) {
                 // this is the very first frame, show the window
                 screen_show_window(&screen);
             }
-            if (!screen_update_frame(&screen, &video_buffer)) {
+            if (!screen_update_frame(&screen, &video_buffer, -1)) {
                 return EVENT_RESULT_CONTINUE;
             }
 	    
             break;
         case 195:
 	    // LOGI("UDP frame arrived!");
-            if (!screen_update_frame(&screen, &video_buffer_udp[0])) {
+            if (!screen_update_frame(&screen, &video_buffer_udp[0], 0)) {
                 return EVENT_RESULT_CONTINUE;
             }
-	    if (!screen_update_frame(&screen, &video_buffer_udp[1])) {
+	    if (!screen_update_frame(&screen, &video_buffer_udp[1], 1)) {
                 return EVENT_RESULT_CONTINUE;
             }
 	    break;
@@ -525,10 +525,12 @@ scrcpy(const struct scrcpy_options *options) {
 	}
     }
 
+/*
     LOGI("hoyoung decoder = %p", dec);
     for (int i = 0; i < 5; i++) {
 	LOGI("hoyoung decoder[%d] = %p", i, dec_udp[i]);
     }
+*/
 
     struct recoder *rec_udp[2] = {NULL};
     for (int i = 0; i < 2; i++) {

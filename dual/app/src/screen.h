@@ -94,7 +94,7 @@ screen_destroy(struct screen *screen);
 
 // resize if necessary and write the rendered frame into the texture
 bool
-screen_update_frame(struct screen *screen, struct video_buffer *vb);
+screen_update_frame(struct screen *screen, struct video_buffer *vb, int flag);
 
 // render the texture to the renderer
 //
