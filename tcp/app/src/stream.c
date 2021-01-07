@@ -145,7 +145,7 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
         packet->data[i] = frame_data[i];
     }
   
-    printf("frame_size = %u\n", frame_size);
+    // printf("frame_size = %u\n", frame_size);
     packet->pts = AV_NOPTS_VALUE;
   
     return true;

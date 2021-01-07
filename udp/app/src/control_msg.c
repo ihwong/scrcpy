@@ -59,10 +59,10 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buffer_write16be(&buf[22], pressure);
             buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
 	    
-	    uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
-	    int payload_length = 4; // ; ; 0 \n
-	    uint16_t pos_x = (buf[12] << 8) | buf[13];
-	    uint16_t pos_y = (buf[16] << 8) | buf[17];
+	    // uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
+	    // int payload_length = 4; // ; ; 0 \n
+	    // uint16_t pos_x = (buf[12] << 8) | buf[13];
+	    // uint16_t pos_y = (buf[16] << 8) | buf[17];
 	    // sprintf(buf, "%d;%d;%u\n", pos_x, pos_y, status);
 	    // printf("payload = %s", buf);
 	    

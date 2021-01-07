@@ -295,6 +295,7 @@ av_log_callback(void *avcl, int level, const char *fmt, va_list vl) {
 bool
 scrcpy(const struct scrcpy_options *options) {
     bool record = !!options->record_filename;
+    /*
     struct server_params params = {
         .log_level = options->log_level,
         .crop = options->crop,
@@ -310,7 +311,6 @@ scrcpy(const struct scrcpy_options *options) {
         .codec_options = options->codec_options,
         .force_adb_forward = options->force_adb_forward,
     };
-    /*
     if (!server_start(&server, options->serial, &params)) {
         return false;
     }
