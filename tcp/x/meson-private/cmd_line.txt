@@ -1,0 +1,7 @@
+[options]
+b_lto = true
+buildtype = release
+strip = True
+
+[properties]
+

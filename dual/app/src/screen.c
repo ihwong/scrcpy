@@ -488,12 +488,12 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb, int flag) {
     mutex_lock(vb->mutex);
     /*const */AVFrame *frame = video_buffer_consume_rendered_frame(vb);
     // struct size new_frame_size = {frame->width, frame->height};
-    LOGI("frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    // LOGI("frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
     for (int i = 0; i < udp_num; i++) {
     	if (flag == us[i].sessionPort) {
     		frame->crop_bottom = 2990 - us[i].height;
     		av_frame_apply_cropping(frame, 0);
-    		LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    		// LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
     	}
     }
 
