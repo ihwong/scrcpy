@@ -40,9 +40,20 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
     buf[0] = msg->type;
     switch (msg->type) {
         case CONTROL_MSG_TYPE_INJECT_KEYCODE:
-            buf[1] = msg->inject_keycode.action;
-            buffer_write32be(&buf[2], msg->inject_keycode.keycode);
-            buffer_write32be(&buf[6], msg->inject_keycode.metastate);
+            if (msg->inject_keycode.action == 0) { // abc
+            	LOGI("KEYBOARD: %d %d %d %d", buf[0], msg->inject_keycode.action, msg->inject_keycode.keycode, msg->inject_keycode.metastate);
+		buf[0] = 0x02;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		buf[6] = 0x00;
+		buf[7] = 0x01;
+		buf[8] = 0x62;
+		printf("%s", buf);
+		return 9;
+	    }
             return 10;
         case CONTROL_MSG_TYPE_INJECT_TEXT: {
             size_t len =
@@ -60,33 +71,8 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
 	    
 	    uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
-	    int payload_length = 4; // ; ; 0 \n
 	    uint16_t pos_x = (buf[12] << 8) | buf[13];
 	    uint16_t pos_y = (buf[16] << 8) | buf[17];
-	    if (pos_x < 10) {
-	      payload_length += 1;
-	    }
-	    else if (pos_x < 100) {
-	      payload_length += 2;
-	    }
-	    else if (pos_x < 1000) {
-	      payload_length += 3;
-	    }
-	    else {
-	      payload_length += 4;
-	    }
-	    if (pos_y < 10) {
-	      payload_length += 1;
-	    }
-	    else if (pos_y < 100) {
-	      payload_length += 2;
-	    }
-	    else if (pos_y < 1000) {
-	      payload_length += 3;
-	    }
-	    else {
-	      payload_length += 4;
-	    }
 	    // sprintf(buf, "%d;%d;%u\n", pos_x, pos_y, status);
 	    // printf("payload = %s", buf);
 	    

@@ -13,6 +13,8 @@
 #include "util/lock.h"
 #include "util/log.h"
 
+#include "scrcpy.h"
+
 #include <libavfilter/avfilter.h>
 
 #define DISPLAY_MARGINS 96
@@ -440,39 +442,21 @@ prepare_for_frame(struct screen *screen, struct size new_frame_size) {
     return true;
 }
 
-SDL_Rect whereToUpdate = {
-    .x = 0,
-    .y = 175,
-    .w = 1440,
-    .h = 810,
-};
-
-SDL_Rect whereToUpdate2 = {
-    .x = 0,
-    .y = 1160,
-    .w = 1440,
-    .h = 70,
-};
-
-AVFrame afterimage, afterimage2;
+AVFrame afterimage[5];
 
 // write the frame into the texture
 static void
 update_texture(struct screen *screen, const AVFrame *frame) {
-    if (frame->height == 810) {
-	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
-			     frame->data[0], frame->linesize[0],
-			     frame->data[1], frame->linesize[1],
-			     frame->data[2], frame->linesize[2]);
-	afterimage = *frame;
-    }
-
-    if (frame->height == 70) {
-	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
-			     frame->data[0], frame->linesize[0],
-			     frame->data[1], frame->linesize[1],
-			     frame->data[2], frame->linesize[2]);
-	afterimage2 = *frame;
+    
+    for (int i = 0; i < udp_num; i++) {
+        if (frame->height == us[i].height) {
+	    SDL_UpdateYUVTexture(screen->texture, &whereToUpdate[i],
+			         frame->data[0], frame->linesize[0],
+			         frame->data[1], frame->linesize[1],
+			         frame->data[2], frame->linesize[2]);
+	    afterimage[i] = *frame;
+	    break;
+        }
     }
 
     if (frame->height == 2990) {
@@ -481,16 +465,13 @@ update_texture(struct screen *screen, const AVFrame *frame) {
 			     frame->data[1], frame->linesize[1],
 			     frame->data[2], frame->linesize[2]);
 	
-	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate,
-			     afterimage.data[0], afterimage.linesize[0],
-			     afterimage.data[1], afterimage.linesize[1],
-			     afterimage.data[2], afterimage.linesize[2]);
+	for (int i = 0; i < udp_num; i++) {
+	    SDL_UpdateYUVTexture(screen->texture, &whereToUpdate[i],
+			         afterimage[i].data[0], afterimage[i].linesize[0],
+			         afterimage[i].data[1], afterimage[i].linesize[1],
+			         afterimage[i].data[2], afterimage[i].linesize[2]);
+	}
 
-	SDL_UpdateYUVTexture(screen->texture, &whereToUpdate2,
-			     afterimage2.data[0], afterimage2.linesize[0],
-			     afterimage2.data[1], afterimage2.linesize[1],
-			     afterimage2.data[2], afterimage2.linesize[2]);
-	  
     }
 
     if (screen->mipmaps) {
@@ -508,16 +489,12 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb, int flag) {
     /*const */AVFrame *frame = video_buffer_consume_rendered_frame(vb);
     // struct size new_frame_size = {frame->width, frame->height};
     LOGI("frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
-    if (flag == 0) {
-    	frame->crop_bottom = 2180;
-    	av_frame_apply_cropping(frame, 0);
-    	LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
-    }
-    
-    if (flag == 1) {
-    	frame->crop_bottom = 2920;
-    	av_frame_apply_cropping(frame, 0);
-    	LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    for (int i = 0; i < udp_num; i++) {
+    	if (flag == us[i].sessionPort) {
+    		frame->crop_bottom = 2990 - us[i].height;
+    		av_frame_apply_cropping(frame, 0);
+    		LOGI("cropped frame_width = %d, frame_height = %d, format = %d, flag = %d", frame->width, frame->height, frame->format, flag);
+    	}
     }
 
     /*

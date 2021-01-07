@@ -235,21 +235,15 @@ handle_event(SDL_Event *event, bool control) {
 static bool
 event_loop(bool display, bool control) {
     (void) display;
-    LOGI("DEBUG 111");
 #ifdef CONTINUOUS_RESIZING_WORKAROUND
     if (display) {
-        LOGI("DEBUG 222");
         SDL_AddEventWatch(event_watcher, NULL);
     }
 #endif
     SDL_Event event;
-    LOGI("DEBUG 333");
     while (SDL_WaitEvent(&event)) {
-        LOGI("DEBUG 444");
         enum event_result result = handle_event(&event, control);
-        LOGI("DEBUG 555");
         switch (result) {
-        LOGI("DEBUG 666");
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;
             case EVENT_RESULT_STOPPED_BY_EOS:
@@ -258,9 +252,7 @@ event_loop(bool display, bool control) {
             case EVENT_RESULT_CONTINUE:
                 break;
         }
-        LOGI("DEBUG 777");
     }
-    LOGI("DEBUG 888");
     return false;
 }
 
@@ -433,7 +425,6 @@ scrcpy(const struct scrcpy_options *options) {
                                    options->rotation, options-> mipmaps)) {
             goto end;
         }
-	LOGI("DEBUG AAA");
         if (options->turn_screen_off) {
             struct control_msg msg;
             msg.type = CONTROL_MSG_TYPE_SET_SCREEN_POWER_MODE;
@@ -443,17 +434,13 @@ scrcpy(const struct scrcpy_options *options) {
                 LOGW("Could not request 'set screen power mode'");
             }
         }
-	LOGI("DEBUG BBB");
         if (options->fullscreen) {
             screen_switch_fullscreen(&screen);
         }
     }
-	LOGI("DEBUG CCC");
     input_manager.prefer_text = options->prefer_text;
-    LOGI("DEBUG CCCCCC");
     ret = event_loop(options->display, options->control);
     LOGD("quit...");
-	LOGI("DEBUG DDD");
     screen_destroy(&screen);
 
 end:

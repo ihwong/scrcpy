@@ -10,6 +10,25 @@
 #include "recorder.h"
 #include "util/log.h"
 
+#include <SDL2/SDL.h>
+
+struct UDP_Session {
+	
+// data from packet
+    float x;
+    float y;
+    int width;
+    int height;
+    int sessionPort;
+	
+};
+
+struct UDP_Session us[5];
+
+int udp_num; // number of REAL UDP sessions from the host
+
+SDL_Rect whereToUpdate[5];
+
 struct scrcpy_options {
     const char *serial;
     const char *crop;

@@ -32,6 +32,8 @@
 #include "util/log.h"
 #include "util/net.h"
 
+#include "scrcpy.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -40,8 +42,6 @@
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
-static struct screen screen2 = SCREEN_INITIALIZER;
-static struct screen screen3 = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
 static struct video_buffer video_buffer;
 static struct stream stream;
@@ -193,11 +193,10 @@ handle_event(SDL_Event *event, bool control) {
             break;
         case 195:
 	    // LOGI("UDP frame arrived!");
-            if (!screen_update_frame(&screen, &video_buffer_udp[0], 0)) {
-                return EVENT_RESULT_CONTINUE;
-            }
-	    if (!screen_update_frame(&screen, &video_buffer_udp[1], 1)) {
-                return EVENT_RESULT_CONTINUE;
+	    for (int i = 0; i < udp_num; i++) {
+            	if (!screen_update_frame(&screen, &video_buffer_udp[i], us[i].sessionPort)) {
+                	return EVENT_RESULT_CONTINUE;
+            	}
             }
 	    break;
         case SDL_WINDOWEVENT:
@@ -374,12 +373,12 @@ scrcpy(const struct scrcpy_options *options) {
     LOGI("sending display info...\n");
     char displayInfo[] = {0x01, 0x00, 0x00, 0x05, 0xa0, 0x00, 0x00, 0x0b, 0xae, 0x00, 0x00, 0x01, 0x90, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02};
     send(server.control_socket, displayInfo, sizeof(displayInfo), 0);
-    // 22 = strlen("display:1440.2620.560") + 1 for newline char
     LOGI("display info sent!\n");
     
-    for (int i = 0; ; i++) {
+    LOGI("receive udp session infos\n");
+    for ( ; ; ) {
 	rcvl = recv(server.control_socket, buffer, 1, 0);
-	if (rcvl > 0) {
+	if (rcvl == 1) {
 	    strings[idx] = buffer[0];
 	    retr = 0;
 	    idx++;
@@ -388,9 +387,40 @@ scrcpy(const struct scrcpy_options *options) {
 	    retr++;
 	}
 	if (retr > 5000000) {
+	    LOGI("end of retry\n");
+	    LOGI("idx = %d\n", idx);
 	    break;
 	}
     }
+    
+    udp_num = idx / 20;
+    
+    for (int i = 0; i < udp_num; i++) {
+        for (int j = 0; j < 20; j++) {
+            LOGI("%02x ", strings[i * 20 + j]);
+        }
+        LOGI("\n");
+        unsigned long temp_x = ((strings[20 * i + 1] & 0xff) << 24) | ((strings[20 * i + 2] & 0xff) << 16) | ((strings[20 * i + 3] & 0xff) << 8) | ((strings[20 * i + 4] & 0xff) << 0);
+        unsigned long temp_y = ((strings[20 * i + 5] & 0xff) << 24) | ((strings[20 * i + 6] & 0xff) << 16) | ((strings[20 * i + 7] & 0xff) << 8) | ((strings[20 * i + 8] & 0xff) << 0);
+        us[i].x = *((float*)&temp_x);
+        us[i].y = *((float*)&temp_y);
+        us[i].width = (strings[20 * i + 9] << 24) | (strings[20 * i + 10] << 16) | ((strings[20 * i + 11] & 0xff) << 8) | ((strings[20 * i + 12] & 0xff) << 0);
+        us[i].height = (strings[20 * i + 13] << 24) | (strings[20 * i + 14] << 16) | (strings[20 * i + 15] << 8) | (strings[20 * i + 16] << 0);
+        us[i].sessionPort = (strings[20 * i + 17] << 8) | (strings[20 * i + 18] << 0);
+    }
+    
+    /* packet format */
+    /* 06 00 00 00 00 43 2f 00 00 00 00 05 a0 00 00 03 2a 27 11 00 */
+    
+    for (int i = 0; i < udp_num; i++) {
+        LOGI("%f %f %d %d %d\n", us[i].x, us[i].y, us[i].width, us[i].height, us[i].sessionPort);
+        whereToUpdate[i].x = us[i].x;
+        whereToUpdate[i].y = us[i].y;
+        whereToUpdate[i].w = us[i].width;
+        whereToUpdate[i].h = us[i].height;
+        
+    }
+
 
     // parsing received string...
     // code is quite dirty but anyway it works
@@ -507,8 +537,8 @@ scrcpy(const struct scrcpy_options *options) {
 
     /* UDP Sessions */
 
-    struct decoder *dec_udp[2] = {NULL};
-    for (int i = 0; i < 2; i++) {
+    struct decoder *dec_udp[5] = {NULL};
+    for (int i = 0; i < 5; i++) {
 	if (options->display) {
 	    
 	    if (!fps_counter_init(&fps_counter_udp[i])) {
@@ -532,8 +562,8 @@ scrcpy(const struct scrcpy_options *options) {
     }
 */
 
-    struct recoder *rec_udp[2] = {NULL};
-    for (int i = 0; i < 2; i++) {
+    struct recoder *rec_udp[5] = {NULL};
+    for (int i = 0; i < 5; i++) {
 	if (record) {
 	    if (!recorder_init(&recorder_udp[i],
 			       options->record_filename,
@@ -559,8 +589,8 @@ scrcpy(const struct scrcpy_options *options) {
     stream_started = true;
     
     /* UDP */
-    for (int i = 0; i < /*parsed_idx*/2; i++) {
-	stream_init_udp(&stream_udp[i], socket_udp[i], dec_udp[i], rec_udp[i], /*us[i].sessionPort*/ 10001+i, i);
+    for (int i = 0; i < udp_num; i++) {
+	stream_init_udp(&stream_udp[i], socket_udp[i], dec_udp[i], rec_udp[i], us[i].sessionPort, i);
 	if (!stream_start_udp(&stream_udp[i])) {
 	    goto end;
 	}

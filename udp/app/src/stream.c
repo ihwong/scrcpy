@@ -47,12 +47,12 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
             close(stream->socket);
             exit(0);
         }
-
+/*
 	for (int i = 0; i < len; i++) {
 	    printf("%02x ", buffer[i]);
 	}
 	printf("\n");
-    
+*/  
         fragment_trace = (fragment_trace << 8) | buffer[1]; // previous rtp_header[1] and current rtp_header[1]
     
         /* packet fragment parser */
@@ -142,11 +142,14 @@ stream_recv_packet(struct stream *stream, AVPacket *packet) {
         packet->data[i] = frame_data[i];
     }
 
+/*
     for (uint32_t i = 0; i < frame_size; i++) {
 	printf("%02x ", frame_data[i]);
     }
-  
+*/
+  /*
     printf("frame_size = %u\n", frame_size);
+    */
     packet->pts = AV_NOPTS_VALUE;
   
     return true;
