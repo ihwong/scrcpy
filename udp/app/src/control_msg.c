@@ -37,18 +37,95 @@ to_fixed_point_16(float f) {
 
 size_t
 control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
+    LOGI("c_m_s called!\n");
     buf[0] = msg->type;
     switch (msg->type) {
         case CONTROL_MSG_TYPE_INJECT_KEYCODE:
-            buf[1] = msg->inject_keycode.action;
-            buffer_write32be(&buf[2], msg->inject_keycode.keycode);
-            buffer_write32be(&buf[6], msg->inject_keycode.metastate);
-            return 10;
+            LOGI("myKEYBOARD: %d %d %d %d", buf[0], msg->inject_keycode.action, msg->inject_keycode.keycode, msg->inject_keycode.metastate);
+            if (msg->inject_keycode.action == 0 && msg->inject_keycode.keycode == 62) { // whitespace
+            	buf[0] = 0x02;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		buf[6] = 0x00;
+		buf[7] = 0x01;
+		buf[8] = 0x20;
+		return 9;
+            }
+            else if (msg->inject_keycode.action == 0 && msg->inject_keycode.keycode == 66) { // newline
+		buf[0] = 0x02;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		buf[6] = 0x00;
+		buf[7] = 0x01;
+		buf[8] = 0x0a;
+		return 9;
+            }
+            else if (msg->inject_keycode.action == 0 && msg->inject_keycode.keycode == 67) { // delete
+            	buf[0] = 0x02;
+		buf[1] = 0x01;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		return 6;
+            }
+            else if (msg->inject_keycode.action == 0 && msg->inject_keycode.metastate == 0) { // abc
+		buf[0] = 0x02;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		buf[6] = 0x00;
+		buf[7] = 0x01;
+		buf[8] = 68 + msg->inject_keycode.keycode;
+		
+		for (int i = 0; i < 9; i++) {
+		    LOGI("%x ", buf[i]);
+		}
+		return 9;
+	    }
+            if (msg->inject_keycode.action == 0 && msg->inject_keycode.metastate == 1048576) { // ABC
+		buf[0] = 0x02;
+		buf[1] = 0x00;
+		buf[2] = 0x00;
+		buf[3] = 0x00;
+		buf[4] = 0x00;
+		buf[5] = 0x05;
+		buf[6] = 0x00;
+		buf[7] = 0x01;
+		buf[8] = 36 + msg->inject_keycode.keycode;
+		for (int i = 0; i < 9; i++) {
+		    LOGI("%x ", buf[i]);
+		}
+		return 9;
+	    }
+            return -1;
         case CONTROL_MSG_TYPE_INJECT_TEXT: {
+            // LOGI("c_m_t_i_t called! %d\n", msg->inject_text.text[0]);
+            // numbers and other symbols such as !@#;',./
+	    buf[0] = 0x02;
+	    buf[1] = 0x00;
+	    buf[2] = 0x00;
+	    buf[3] = 0x00;
+	    buf[4] = 0x00;
+	    buf[5] = 0x05;
+	    buf[6] = 0x00;
+	    buf[7] = 0x01;
+	    buf[8] = msg->inject_text.text[0];
+	    return 9;
+            /*
             size_t len =
                 write_string(msg->inject_text.text,
                              CONTROL_MSG_INJECT_TEXT_MAX_LENGTH, &buf[1]);
             return 1 + len;
+            */
         }
         case CONTROL_MSG_TYPE_INJECT_TOUCH_EVENT:
             buf[1] = msg->inject_touch_event.action;
@@ -60,7 +137,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buffer_write32be(&buf[24], msg->inject_touch_event.buttons);
 	    
 	    // uint8_t status = buf[1]; // 0 click, 1 release, 2 drag
-	    // int payload_length = 4; // ; ; 0 \n
 	    // uint16_t pos_x = (buf[12] << 8) | buf[13];
 	    // uint16_t pos_y = (buf[16] << 8) | buf[17];
 	    // sprintf(buf, "%d;%d;%u\n", pos_x, pos_y, status);
@@ -80,12 +156,10 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    for (int i = 0; i < 10; i++) {
 	        buf[i] = tempBuffer[i];
 	    }
-	    /*
 	    for (int i = 0; i < 10; i++) {
 	        printf("%x ", buf[i]);
 	    }
 	    printf("\n");
-	    */
             return 10;// 28;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
             write_position(&buf[1], &msg->inject_scroll_event.position);

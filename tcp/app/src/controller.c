@@ -66,6 +66,7 @@ process_msg(struct controller *controller,
         return false;
     }
     int w = net_send_all(controller->control_socket, serialized_msg, length);
+    LOGI("w = %d", w);
     return w == length;
 }
 
