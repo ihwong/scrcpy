@@ -63,30 +63,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    int payload_length = 4; // ; ; 0 \n
 	    uint16_t pos_x = (buf[12] << 8) | buf[13];
 	    uint16_t pos_y = (buf[16] << 8) | buf[17];
-	    if (pos_x < 10) {
-	      payload_length += 1;
-	    }
-	    else if (pos_x < 100) {
-	      payload_length += 2;
-	    }
-	    else if (pos_x < 1000) {
-	      payload_length += 3;
-	    }
-	    else {
-	      payload_length += 4;
-	    }
-	    if (pos_y < 10) {
-	      payload_length += 1;
-	    }
-	    else if (pos_y < 100) {
-	      payload_length += 2;
-	    }
-	    else if (pos_y < 1000) {
-	      payload_length += 3;
-	    }
-	    else {
-	      payload_length += 4;
-	    }
 	    // sprintf(buf, "%d;%d;%u\n", pos_x, pos_y, status);
 	    // printf("payload = %s", buf);
 	    
@@ -104,10 +80,12 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    for (int i = 0; i < 10; i++) {
 	        buf[i] = tempBuffer[i];
 	    }
+	    /*
 	    for (int i = 0; i < 10; i++) {
 	        printf("%x ", buf[i]);
 	    }
 	    printf("\n");
+	    */
             return 10;// 28;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
             write_position(&buf[1], &msg->inject_scroll_event.position);

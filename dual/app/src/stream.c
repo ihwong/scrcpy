@@ -295,7 +295,7 @@ process_config_packet(struct stream *stream, AVPacket *packet) {
 static bool
 process_frame(struct stream *stream, AVPacket *packet) {
     if (stream->decoder && !decoder_push(stream->decoder, packet)) {
-        return false;
+        return /*false*/true;
     }
 
     if (stream->recorder) {
@@ -303,7 +303,7 @@ process_frame(struct stream *stream, AVPacket *packet) {
 
         if (!recorder_push(stream->recorder, packet)) {
             LOGE("Could not send packet to recorder");
-            return false;
+            return /*false*/true;
         }
     }
 
