@@ -264,8 +264,19 @@ event_loop(bool display, bool control) {
     }
 #endif
     SDL_Event event;
+        /* START OF MAGIC NUMBER AUTO UPDATE !!! */
+
+    char mbuf[5];
     while (SDL_WaitEvent(&event)) {
         enum event_result result = handle_event(&event, control);
+    	// LOGI("HOYOUNG EVENT LOOP! %d\n", server.control_socket);
+    	// LOGI("rcvlen = %d\n", rcvlen);
+    	if (recv(server.control_socket, mbuf, 5, 0) == 5/* && mbuf[0] == 0 && mbuf[1] == 0 && mbuf[2] == 0 && mbuf[3] == 0*/) {
+    	    // LOGI("rcvlen = %d, mbuf = %d %d %d %d %d\n", rcvlen, mbuf[0], mbuf[1], mbuf[2], mbuf[3], mbuf[4]);
+    	    LOGI("magic num = %d\n", mbuf[4]);
+    	    magic_num = mbuf[4];
+    	}
+    	/* END OF MAGIC NUMBER AUTO UPDATE !!! */
         switch (result) {
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;

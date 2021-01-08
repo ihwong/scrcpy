@@ -8,6 +8,8 @@
 #include "util/log.h"
 #include "util/str_util.h"
 
+#include "scrcpy.h"
+
 static void
 write_position(uint8_t *buf, const struct position *position) {
     buffer_write32be(&buf[0], position->point.x);
@@ -48,7 +50,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
-		buf[5] = 0x05;
+		buf[5] = magic_num;
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 0x20;
@@ -60,7 +62,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
-		buf[5] = 0x05;
+		buf[5] = magic_num;
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 0x0a;
@@ -72,7 +74,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
-		buf[5] = 0x05;
+		buf[5] = magic_num;
 		return 6;
             }
             else if (msg->inject_keycode.action == 0 && msg->inject_keycode.metastate == 0) { // abc
@@ -81,7 +83,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
-		buf[5] = 0x05;
+		buf[5] = magic_num;
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 68 + msg->inject_keycode.keycode;
@@ -97,7 +99,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[2] = 0x00;
 		buf[3] = 0x00;
 		buf[4] = 0x00;
-		buf[5] = 0x05;
+		buf[5] = magic_num;
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 36 + msg->inject_keycode.keycode;
@@ -115,7 +117,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    buf[2] = 0x00;
 	    buf[3] = 0x00;
 	    buf[4] = 0x00;
-	    buf[5] = 0x05;
+	    buf[5] = magic_num;
 	    buf[6] = 0x00;
 	    buf[7] = 0x01;
 	    buf[8] = msg->inject_text.text[0];

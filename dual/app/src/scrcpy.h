@@ -12,6 +12,8 @@
 
 #include <SDL2/SDL.h>
 
+int magic_num;
+
 struct UDP_Session {
 	
 // data from packet
