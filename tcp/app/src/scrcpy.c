@@ -7,6 +7,8 @@
 #include <sys/time.h>
 #include <SDL2/SDL.h>
 
+#include <fcntl.h>
+
 #ifdef _WIN32
 # include <windows.h>
 #endif
@@ -180,6 +182,7 @@ handle_event(SDL_Event *event, bool control) {
             screen_handle_window_event(&screen, &event->window);
             break;
         case SDL_TEXTINPUT:
+            // LOGI("HERE!");
             if (!control) {
                 break;
             }
@@ -192,6 +195,7 @@ handle_event(SDL_Event *event, bool control) {
             input_manager_process_key(&input_manager, &event->key, control);
             break;
         case SDL_MOUSEMOTION:
+            // LOGI("HERE!");
             if (!control) {
                 break;
             }
@@ -205,6 +209,7 @@ handle_event(SDL_Event *event, bool control) {
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
+            LOGI("HERE!");
             // some mouse events do not interact with the device, so process
             // the event even if control is disabled
             input_manager_process_mouse_button(&input_manager, &event->button,
@@ -241,8 +246,19 @@ event_loop(bool display, bool control) {
     }
 #endif
     SDL_Event event;
+        /* START OF MAGIC NUMBER AUTO UPDATE !!! */
+
+    char mbuf[5];
     while (SDL_WaitEvent(&event)) {
         enum event_result result = handle_event(&event, control);
+    	// LOGI("HOYOUNG EVENT LOOP! %d\n", server.control_socket);
+    	// LOGI("rcvlen = %d\n", rcvlen);
+    	if (recv(server.control_socket, mbuf, 5, 0) == 5/* && mbuf[0] == 0 && mbuf[1] == 0 && mbuf[2] == 0 && mbuf[3] == 0*/) {
+    	    // LOGI("rcvlen = %d, mbuf = %d %d %d %d %d\n", rcvlen, mbuf[0], mbuf[1], mbuf[2], mbuf[3], mbuf[4]);
+    	    LOGI("magic num = %d\n", mbuf[4]);
+    	    magic_num = mbuf[4];
+    	}
+    	/* END OF MAGIC NUMBER AUTO UPDATE !!! */
         switch (result) {
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;
@@ -332,6 +348,9 @@ scrcpy(const struct scrcpy_options *options) {
     if (!server_connect_to(&server)) {
         goto end;
     }
+    
+    int flag = fcntl(server.control_socket, F_GETFL, 0);
+    fcntl(server.control_socket, F_SETFL, flag | O_NONBLOCK);
 
     char device_name[DEVICE_NAME_FIELD_LENGTH];
     struct size frame_size;

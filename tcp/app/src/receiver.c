@@ -45,7 +45,7 @@ process_msgs(const unsigned char *buf, size_t len) {
             return head;
         }
 
-        process_msg(&msg);
+        // process_msg(&msg);
         device_msg_destroy(&msg);
 
         head += r;

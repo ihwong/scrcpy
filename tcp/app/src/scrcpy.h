@@ -10,6 +10,8 @@
 #include "recorder.h"
 #include "util/log.h"
 
+int magic_num;
+
 struct scrcpy_options {
     const char *serial;
     const char *crop;
