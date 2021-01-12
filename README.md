@@ -34,3 +34,9 @@
 ## TCP Development Details
 
  1. Forked from the original scrcpy (https://github.com/Genymobile/scrcpy/tree/0e4a6f462bcc628af00896eea38aa883d68acc88)
+
+## DUAL Dependencies
+
+```
+sudo apt install libavfilter-dev libavfilter-extra libavfilter-extra7
+```
