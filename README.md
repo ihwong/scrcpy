@@ -38,5 +38,7 @@
 ## DUAL Dependencies
 
 ```
-sudo apt install libavfilter-dev libavfilter-extra libavfilter-extra7
+$ sudo apt install libavfilter-dev libavfilter-extra libavfilter-extra7
 ```
+
+/usr/lib/x86_64-linux-gnu/libavfilter.so to ./x/build.ninja
