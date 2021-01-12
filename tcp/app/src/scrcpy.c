@@ -7,8 +7,6 @@
 #include <sys/time.h>
 #include <SDL2/SDL.h>
 
-#include <fcntl.h>
-
 #ifdef _WIN32
 # include <windows.h>
 #endif
@@ -36,6 +34,8 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#include <fcntl.h>
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
@@ -209,7 +209,7 @@ handle_event(SDL_Event *event, bool control) {
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-            LOGI("HERE!");
+            // LOGI("HERE!");
             // some mouse events do not interact with the device, so process
             // the event even if control is disabled
             input_manager_process_mouse_button(&input_manager, &event->button,

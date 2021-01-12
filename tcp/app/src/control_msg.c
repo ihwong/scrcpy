@@ -86,11 +86,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 68 + msg->inject_keycode.keycode;
-		/*
-		for (int i = 0; i < 9; i++) {
-		    LOGI("%x ", buf[i]);
-		}
-		*/
 		return 9;
 	    }
             if (msg->inject_keycode.action == 0 && msg->inject_keycode.metastate == 1048576) { // ABC
@@ -103,11 +98,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 36 + msg->inject_keycode.keycode;
-		/*
-		for (int i = 0; i < 9; i++) {
-		    LOGI("%x ", buf[i]);
-		}
-		*/
 		return 9;
 	    }
             return -1;
@@ -160,19 +150,77 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    for (int i = 0; i < 10; i++) {
 	        buf[i] = tempBuffer[i];
 	    }
-	    /*
-	    for (int i = 0; i < 10; i++) {
-	        printf("%x ", buf[i]);
-	    }
-	    printf("\n");
-		*/
             return 10;// 28;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
+        /* original scrcpy's scroll event payload format */
+        /*
+            buf[0]            : 3
+            buf[1] ~ buf[4]   : pos_x = (buf[1] << 24 | buf[2] << 16 | buf[3] << 8 | buf[4] << 0)
+            buf[5] ~ buf[8]   : pos_y = (buf[5] << 24 | buf[6] << 16 | buf[7] << 8 | buf[8] << 0)
+            buf[9] ~ buf[12]  : 5 160 11 174
+            buf[13] ~ buf[16] : horizontal (0 0 0 1 right or 255 255 255 255 left)
+            buf[17] ~ buf[20] : vertical (0 0 0 1 up or 255 255 255 255 down)
+        */
             write_position(&buf[1], &msg->inject_scroll_event.position);
             buffer_write32be(&buf[13],
                              (uint32_t) msg->inject_scroll_event.hscroll);
             buffer_write32be(&buf[17],
                              (uint32_t) msg->inject_scroll_event.vscroll);
+            LOGI("type = %d, pos_x = %d, pos_y = %d", buf[0], (buf[1] << 24 | buf[2] << 16 | buf[3] << 8 | buf[4] << 0), (buf[5] << 24 | buf[6] << 16 | buf[7] << 8 | buf[8] << 0));
+            
+            switch ((buf[16] << 8) | (buf[20] << 0)) {
+                case 1:
+                    tempBuffer[30];
+                    LOGI("vertical down");
+                    tempBuffer[0] = 0x03;
+                    tempBuffer[1] = 0;
+                    tempBuffer[2] = 0x00;
+                    tempBuffer[3] = 0x00;
+                    tempBuffer[4] = buf[3];
+                    tempBuffer[5] = buf[4];
+                    tempBuffer[6] = 0x00;
+                    tempBuffer[7] = 0x00;
+                    tempBuffer[8] = buf[7];
+                    tempBuffer[9] = buf[8];
+                    tempBuffer[10] = 0x03;
+                    tempBuffer[11] = 2;
+                    tempBuffer[12] = 0x00;
+                    tempBuffer[13] = 0x00;
+                    tempBuffer[14] = buf[3];
+                    tempBuffer[15] = buf[4];
+                    tempBuffer[16] = 0x00;
+                    tempBuffer[17] = 0x00;
+                    tempBuffer[18] = buf[7];
+                    tempBuffer[19] = buf[8] + 10;
+                    tempBuffer[20] = 0x03;
+                    tempBuffer[21] = 1;
+                    tempBuffer[22] = 0x00;
+                    tempBuffer[23] = 0x00;
+                    tempBuffer[24] = buf[3];
+                    tempBuffer[25] = buf[4];
+                    tempBuffer[26] = 0x00;
+                    tempBuffer[27] = 0x00;
+                    tempBuffer[28] = buf[7];
+                    tempBuffer[29] = buf[8] + 20;
+                    for (int i = 0; i < 30; i++) {
+                        buf[i] = tempBuffer[i];
+                    }
+                    return 30;
+                    break;
+                case 255:
+                    LOGI("vertical up");
+                    break;
+                case 256:
+                    LOGI("horizontal right");
+                    break;
+                case 65280:
+                    LOGI("horizontal left");
+                    break;
+                default:
+                    LOGI("ERROR :(");
+                    break;
+            }
+            // LOGI("%d %d %d\n", msg->inject_scroll_event.position, msg->inject_scroll_event.hscroll, msg->inject_scroll_event.vscroll);
             return 21;
         case CONTROL_MSG_TYPE_SET_CLIPBOARD: {
             buf[1] = !!msg->set_clipboard.paste;

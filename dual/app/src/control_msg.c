@@ -39,11 +39,10 @@ to_fixed_point_16(float f) {
 
 size_t
 control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
-    LOGI("c_m_s called!\n");
     buf[0] = msg->type;
     switch (msg->type) {
         case CONTROL_MSG_TYPE_INJECT_KEYCODE:
-            LOGI("myKEYBOARD: %d %d %d %d", buf[0], msg->inject_keycode.action, msg->inject_keycode.keycode, msg->inject_keycode.metastate);
+            // LOGI("myKEYBOARD: %d %d %d %d", buf[0], msg->inject_keycode.action, msg->inject_keycode.keycode, msg->inject_keycode.metastate);
             if (msg->inject_keycode.action == 0 && msg->inject_keycode.keycode == 62) { // whitespace
             	buf[0] = 0x02;
 		buf[1] = 0x00;
@@ -87,10 +86,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 68 + msg->inject_keycode.keycode;
-		
-		for (int i = 0; i < 9; i++) {
-		    LOGI("%x ", buf[i]);
-		}
 		return 9;
 	    }
             if (msg->inject_keycode.action == 0 && msg->inject_keycode.metastate == 1048576) { // ABC
@@ -103,9 +98,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 		buf[6] = 0x00;
 		buf[7] = 0x01;
 		buf[8] = 36 + msg->inject_keycode.keycode;
-		for (int i = 0; i < 9; i++) {
-		    LOGI("%x ", buf[i]);
-		}
 		return 9;
 	    }
             return -1;
@@ -158,10 +150,6 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	    for (int i = 0; i < 10; i++) {
 	        buf[i] = tempBuffer[i];
 	    }
-	    for (int i = 0; i < 10; i++) {
-	        printf("%x ", buf[i]);
-	    }
-	    printf("\n");
             return 10;// 28;
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
             write_position(&buf[1], &msg->inject_scroll_event.position);

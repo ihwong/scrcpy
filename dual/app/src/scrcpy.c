@@ -32,13 +32,12 @@
 #include "util/log.h"
 #include "util/net.h"
 
-#include "scrcpy.h"
-
+/* FLUID start */
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #include <fcntl.h>
 #include <arpa/inet.h>
+/* FLUID end */
 
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
@@ -57,12 +56,14 @@ static struct input_manager input_manager = {
     .prefer_text = false, // initialized later
 };
 
+/* FLUID start */
 static struct fps_counter fps_counter_udp[5];
 static struct video_buffer video_buffer_udp[5];
 static struct stream stream_udp[5];
 static struct decoder decoder_udp[5];
 static struct recorder recorder_udp[5];
 int socket_udp[5];
+/* FLUID end */
 
 #ifdef _WIN32
 BOOL WINAPI windows_ctrl_handler(DWORD ctrl_type) {
@@ -171,16 +172,16 @@ enum event_result {
 
 static enum event_result
 handle_event(SDL_Event *event, bool control) {
-
     switch (event->type) {
         case EVENT_STREAM_STOPPED:
+/*
             LOGD("Video stream stopped");
             return EVENT_RESULT_STOPPED_BY_EOS;
+*/
         case SDL_QUIT:
             LOGD("User requested to quit");
             return EVENT_RESULT_STOPPED_BY_USER;
         case EVENT_NEW_FRAME:
-	    // LOGI("TCP frame arrived!");
             if (!screen.has_frame) {
                 screen.has_frame = true;
                 // this is the very first frame, show the window
@@ -191,6 +192,7 @@ handle_event(SDL_Event *event, bool control) {
             }
 	    
             break;
+/* FLUID start */
         case 195:
 	    // LOGI("UDP frame arrived!");
 	    for (int i = 0; i < udp_num; i++) {
@@ -199,6 +201,7 @@ handle_event(SDL_Event *event, bool control) {
             	}
             }
 	    break;
+/* FLUID end */
         case SDL_WINDOWEVENT:
             screen_handle_window_event(&screen, &event->window);
             break;
@@ -264,27 +267,27 @@ event_loop(bool display, bool control) {
     }
 #endif
     SDL_Event event;
-        /* START OF MAGIC NUMBER AUTO UPDATE !!! */
-
+/* FLUID start */
     char mbuf[5];
+/* FLUID end */
     while (SDL_WaitEvent(&event)) {
         enum event_result result = handle_event(&event, control);
-    	// LOGI("HOYOUNG EVENT LOOP! %d\n", server.control_socket);
-    	// LOGI("rcvlen = %d\n", rcvlen);
-    	if (recv(server.control_socket, mbuf, 5, 0) == 5/* && mbuf[0] == 0 && mbuf[1] == 0 && mbuf[2] == 0 && mbuf[3] == 0*/) {
-    	    // LOGI("rcvlen = %d, mbuf = %d %d %d %d %d\n", rcvlen, mbuf[0], mbuf[1], mbuf[2], mbuf[3], mbuf[4]);
+/* FLUID start */
+    	if (recv(server.control_socket, mbuf, 5, 0) == 5) {
     	    LOGI("magic num = %d\n", mbuf[4]);
     	    magic_num = mbuf[4];
     	}
-    	/* END OF MAGIC NUMBER AUTO UPDATE !!! */
+/* FLUID end */
         switch (result) {
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;
             case EVENT_RESULT_STOPPED_BY_EOS:
-		/*
+/* FLUID start */
+/*
                 LOGW("Device disconnected");
                 return false;
-		*/
+*/
+/* FLUID end */
             case EVENT_RESULT_CONTINUE:
                 break;
         }
@@ -382,6 +385,7 @@ scrcpy(const struct scrcpy_options *options) {
     int idx = 0;
 
     LOGI("sending display info...\n");
+    // last byte 0x02: dual, 0x01: tcp
     char displayInfo[] = {0x01, 0x00, 0x00, 0x05, 0xa0, 0x00, 0x00, 0x0b, 0xae, 0x00, 0x00, 0x01, 0x90, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02};
     send(server.control_socket, displayInfo, sizeof(displayInfo), 0);
     LOGI("display info sent!\n");
