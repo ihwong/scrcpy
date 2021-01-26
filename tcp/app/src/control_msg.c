@@ -151,7 +151,9 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
 	        buf[i] = tempBuffer[i];
 	    }
             return 10;// 28;
+            /*
         case CONTROL_MSG_TYPE_INJECT_SCROLL_EVENT:
+        */
         /* original scrcpy's scroll event payload format */
         /*
             buf[0]            : 3
@@ -161,6 +163,7 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
             buf[13] ~ buf[16] : horizontal (0 0 0 1 right or 255 255 255 255 left)
             buf[17] ~ buf[20] : vertical (0 0 0 1 up or 255 255 255 255 down)
         */
+        /*
             write_position(&buf[1], &msg->inject_scroll_event.position);
             buffer_write32be(&buf[13],
                              (uint32_t) msg->inject_scroll_event.hscroll);
@@ -220,8 +223,9 @@ control_msg_serialize(const struct control_msg *msg, unsigned char *buf) {
                     LOGI("ERROR :(");
                     break;
             }
+            */
             // LOGI("%d %d %d\n", msg->inject_scroll_event.position, msg->inject_scroll_event.hscroll, msg->inject_scroll_event.vscroll);
-            return 21;
+            // return 21;
         case CONTROL_MSG_TYPE_SET_CLIPBOARD: {
             buf[1] = !!msg->set_clipboard.paste;
             size_t len = write_string(msg->set_clipboard.text,

@@ -26,7 +26,7 @@ rule CUSTOM_COMMAND
  restat = 1
 
 rule REGENERATE_BUILD
- command = /usr/bin/meson --internal regenerate /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/x --backend ninja
+ command = /usr/bin/meson --internal regenerate /home/hwong/Workspace/scrcpy/tcp /home/hwong/Workspace/scrcpy/tcp/x --backend ninja
  description = Regenerating build files.
  generator = 1
 
@@ -98,7 +98,7 @@ build app/a172ced@@scrcpy@exe/src_recorder.c.o: c_COMPILER ../app/src/recorder.c
 
 build app/a172ced@@scrcpy@exe/src_scrcpy.c.o: c_COMPILER ../app/src/scrcpy.c
  DEPFILE = app/a172ced@@scrcpy@exe/src_scrcpy.c.o.d
- ARGS = -Iapp/a172ced@@scrcpy@exe -Iapp -I../app -I../app/src -I/usr/include/x86_64-linux-gnu -I/usr/include/SDL2 -flto -fdiagnostics-color=always -pipe -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wextra -std=c11 -O3 -D_REENTRANT
+ ARGS = -Iapp/a172ced@@scrcpy@exe -Iapp -I../app -I../app/src -I/usr/include/x86_64-linux-gnu -I/usr/include/SDL2 -flto -fdiagnostics-color=always -pipe -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wextra -std=c11 -O3 -D_REENTRANT -pthread -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/fribidi -I/usr/include/harfbuzz -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/uuid -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
 build app/a172ced@@scrcpy@exe/src_screen.c.o: c_COMPILER ../app/src/screen.c
  DEPFILE = app/a172ced@@scrcpy@exe/src_screen.c.o.d
@@ -133,17 +133,17 @@ build app/a172ced@@scrcpy@exe/src_sys_unix_command.c.o: c_COMPILER ../app/src/sy
  ARGS = -Iapp/a172ced@@scrcpy@exe -Iapp -I../app -I../app/src -I/usr/include/x86_64-linux-gnu -I/usr/include/SDL2 -flto -fdiagnostics-color=always -pipe -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wextra -std=c11 -O3 -D_REENTRANT
 
 build app/scrcpy: c_LINKER app/a172ced@@scrcpy@exe/src_main.c.o app/a172ced@@scrcpy@exe/src_cli.c.o app/a172ced@@scrcpy@exe/src_command.c.o app/a172ced@@scrcpy@exe/src_control_msg.c.o app/a172ced@@scrcpy@exe/src_controller.c.o app/a172ced@@scrcpy@exe/src_decoder.c.o app/a172ced@@scrcpy@exe/src_device.c.o app/a172ced@@scrcpy@exe/src_device_msg.c.o app/a172ced@@scrcpy@exe/src_event_converter.c.o app/a172ced@@scrcpy@exe/src_file_handler.c.o app/a172ced@@scrcpy@exe/src_fps_counter.c.o app/a172ced@@scrcpy@exe/src_input_manager.c.o app/a172ced@@scrcpy@exe/src_opengl.c.o app/a172ced@@scrcpy@exe/src_receiver.c.o app/a172ced@@scrcpy@exe/src_recorder.c.o app/a172ced@@scrcpy@exe/src_scrcpy.c.o app/a172ced@@scrcpy@exe/src_screen.c.o app/a172ced@@scrcpy@exe/src_server.c.o app/a172ced@@scrcpy@exe/src_stream.c.o app/a172ced@@scrcpy@exe/src_tiny_xpm.c.o app/a172ced@@scrcpy@exe/src_video_buffer.c.o app/a172ced@@scrcpy@exe/src_util_net.c.o app/a172ced@@scrcpy@exe/src_util_str_util.c.o app/a172ced@@scrcpy@exe/src_sys_unix_command.c.o | /usr/lib/x86_64-linux-gnu/libavformat.so /usr/lib/x86_64-linux-gnu/libavcodec.so /usr/lib/x86_64-linux-gnu/libavutil.so /usr/lib/x86_64-linux-gnu/libSDL2.so
- LINK_ARGS = -flto -Wl,--as-needed -Wl,--no-undefined -Wl,-O1 -Wl,--start-group /usr/lib/x86_64-linux-gnu/libavformat.so /usr/lib/x86_64-linux-gnu/libavcodec.so /usr/lib/x86_64-linux-gnu/libavutil.so /usr/lib/x86_64-linux-gnu/libSDL2.so -Wl,--end-group
+ LINK_ARGS = -flto -Wl,--as-needed -Wl,--no-undefined -Wl,-O1 -Wl,--start-group /usr/lib/x86_64-linux-gnu/libavformat.so /usr/lib/x86_64-linux-gnu/libavcodec.so /usr/lib/x86_64-linux-gnu/libavutil.so /usr/lib/x86_64-linux-gnu/libSDL2.so -lgtk-3 -lgdk-3 -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -Wl,--end-group
 
-build server/scrcpy-server: CUSTOM_COMMAND  | /home/hwong/scrcpy/tcp/server/./scripts/build-wrapper.sh PHONY
+build server/scrcpy-server: CUSTOM_COMMAND  | /home/hwong/Workspace/scrcpy/tcp/server/./scripts/build-wrapper.sh PHONY
  pool = console
- COMMAND = /home/hwong/scrcpy/tcp/server/./scripts/build-wrapper.sh /home/hwong/scrcpy/tcp/server server/scrcpy-server release
+ COMMAND = /home/hwong/Workspace/scrcpy/tcp/server/./scripts/build-wrapper.sh /home/hwong/Workspace/scrcpy/tcp/server server/scrcpy-server release
  description = Generating$ scrcpy-server$ with$ a$ custom$ command.
 
 build run: phony meson-run
 
 build meson-run: CUSTOM_COMMAND 
- COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/scrcpy/tcp /home/hwong/scrcpy/tcp/x '' /usr/bin/meson scripts/run-scrcpy.sh
+ COMMAND = /usr/bin/meson --internal commandrunner /home/hwong/Workspace/scrcpy/tcp /home/hwong/Workspace/scrcpy/tcp/x '' /usr/bin/meson scripts/run-scrcpy.sh
  description = Running$ external$ command$ run.
  pool = console
 
@@ -192,7 +192,7 @@ build all: phony app/scrcpy server/scrcpy-server
 build clean: phony meson-clean
 
 build meson-clean-ctlist: CUSTOM_COMMAND PHONY
- COMMAND = /usr/bin/meson --internal cleantrees /home/hwong/scrcpy/tcp/x/meson-private/cleantrees.dat
+ COMMAND = /usr/bin/meson --internal cleantrees /home/hwong/Workspace/scrcpy/tcp/x/meson-private/cleantrees.dat
  description = Cleaning$ custom$ target$ directories.
 
 build clean-ctlist: phony meson-clean-ctlist

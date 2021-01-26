@@ -13,6 +13,26 @@
 #include "util/lock.h"
 #include "util/log.h"
 
+#include <time.h>
+#include <sys/time.h>
+
+void printt3(void) {
+  
+  struct timeval tv;
+  struct tm *lt;
+  time_t t = gettimeofday(&tv, NULL);
+  lt = localtime(&tv.tv_sec);
+  
+  if (t == -1 || lt == NULL) {
+    printf("CURRENT TIME UNKNOWN ");
+    return;
+  }
+  
+  LOGI("screen render ok: %02d:%02d:%02d.%06ld", lt->tm_hour, lt->tm_min, lt->tm_sec, tv.tv_usec);
+  return;
+  
+}
+
 #define DISPLAY_MARGINS 96
 
 static inline struct size
@@ -468,6 +488,7 @@ screen_update_frame(struct screen *screen, struct video_buffer *vb) {
     mutex_unlock(vb->mutex);
 
     screen_render(screen, false);
+    printt3();
     return true;
 }
 

@@ -12,6 +12,18 @@
 
 int magic_num;
 
+/* NativeUI start */
+#define _XOPEN_SOURCE 600 /* for usleep */
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <time.h>
+#include <sys/time.h>
+
+struct timeval eventSent, dataReceived, GtkRendered;
+/* NativeUI end */
+
 struct scrcpy_options {
     const char *serial;
     const char *crop;

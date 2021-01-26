@@ -124,6 +124,7 @@ recorder_open(struct recorder *recorder, const AVCodec *input_codec) {
     }
 
     recorder->ctx = avformat_alloc_context();
+    LOGI("recored->ctx = %p", recorder->ctx);
     if (!recorder->ctx) {
         LOGE("Could not allocate output context");
         return false;

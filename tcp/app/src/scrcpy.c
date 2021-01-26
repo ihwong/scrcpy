@@ -37,6 +37,8 @@
 
 #include <fcntl.h>
 
+#include <gtk/gtk.h>
+
 static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
@@ -46,6 +48,8 @@ static struct decoder decoder;
 static struct recorder recorder;
 static struct controller controller;
 static struct file_handler file_handler;
+
+GtkTextBuffer *buffer;
 
 static struct input_manager input_manager = {
     .controller = &controller,
@@ -182,7 +186,6 @@ handle_event(SDL_Event *event, bool control) {
             screen_handle_window_event(&screen, &event->window);
             break;
         case SDL_TEXTINPUT:
-            // LOGI("HERE!");
             if (!control) {
                 break;
             }
@@ -195,7 +198,6 @@ handle_event(SDL_Event *event, bool control) {
             input_manager_process_key(&input_manager, &event->key, control);
             break;
         case SDL_MOUSEMOTION:
-            // LOGI("HERE!");
             if (!control) {
                 break;
             }
@@ -209,7 +211,6 @@ handle_event(SDL_Event *event, bool control) {
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-            // LOGI("HERE!");
             // some mouse events do not interact with the device, so process
             // the event even if control is disabled
             input_manager_process_mouse_button(&input_manager, &event->button,
@@ -246,19 +247,8 @@ event_loop(bool display, bool control) {
     }
 #endif
     SDL_Event event;
-        /* START OF MAGIC NUMBER AUTO UPDATE !!! */
-
-    char mbuf[5];
     while (SDL_WaitEvent(&event)) {
         enum event_result result = handle_event(&event, control);
-    	// LOGI("HOYOUNG EVENT LOOP! %d\n", server.control_socket);
-    	// LOGI("rcvlen = %d\n", rcvlen);
-    	if (recv(server.control_socket, mbuf, 5, 0) == 5/* && mbuf[0] == 0 && mbuf[1] == 0 && mbuf[2] == 0 && mbuf[3] == 0*/) {
-    	    // LOGI("rcvlen = %d, mbuf = %d %d %d %d %d\n", rcvlen, mbuf[0], mbuf[1], mbuf[2], mbuf[3], mbuf[4]);
-    	    LOGI("magic num = %d\n", mbuf[4]);
-    	    magic_num = mbuf[4];
-    	}
-    	/* END OF MAGIC NUMBER AUTO UPDATE !!! */
         switch (result) {
             case EVENT_RESULT_STOPPED_BY_USER:
                 return true;
@@ -306,6 +296,38 @@ av_log_callback(void *avcl, int level, const char *fmt, va_list vl) {
     strcpy(local_fmt + 9, fmt);
     SDL_LogMessageV(SDL_LOG_CATEGORY_VIDEO, priority, local_fmt, vl);
     SDL_free(local_fmt);
+}
+
+static int
+GTKThread(void *ptr) {
+    LOGI("GTKThread starts here");
+    char mbuf[1024];
+    for ( ; ; ) {
+        
+        int rcvlen = recv(server.control_socket, mbuf, 100, 0);
+        if (rcvlen > 0) {
+            gettimeofday(&dataReceived, NULL);
+            LOGE("e %ld", eventSent.tv_sec * 1000000 + eventSent.tv_usec);
+            LOGE("d %ld", dataReceived.tv_sec * 1000000 + dataReceived.tv_usec);
+            /*
+            for (int i = 0; i < rcvlen; i++) {
+    	        if (mbuf[i] < 32) {
+    	            mbuf[i] = 'x';
+    	        }
+            }
+            mbuf[rcvlen] = '\0';
+            */
+            gtk_text_buffer_set_text(buffer, &mbuf[23], 1/*rcvlen*/);
+            gtk_main_iteration_do(FALSE);
+            gettimeofday(&GtkRendered, NULL);
+            LOGE("g %ld", GtkRendered.tv_sec * 1000000 + GtkRendered.tv_usec);
+            continue;
+        }
+        else {
+            gtk_main_iteration_do(FALSE);
+        }
+    }
+    return 0;
 }
 
 bool
@@ -387,6 +409,7 @@ scrcpy(const struct scrcpy_options *options) {
         decoder_init(&decoder, &video_buffer);
         dec = &decoder;
     }
+   
 
     struct recorder *rec = NULL;
     if (record) {
@@ -460,6 +483,37 @@ scrcpy(const struct scrcpy_options *options) {
     }
 
     input_manager.prefer_text = options->prefer_text;
+    
+    /* GTK NativeUI */
+  GtkWidget *window;
+  GtkWidget *view;
+  GtkWidget *vbox;
+
+  gtk_init(NULL, NULL);
+
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+  gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
+  gtk_window_set_title(GTK_WINDOW(window), "NativeUI TextView");
+
+  vbox = gtk_box_new(FALSE, 0);
+  view = gtk_text_view_new();
+  gtk_box_pack_start(GTK_BOX(vbox), view, TRUE, TRUE, 0);
+
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
+
+  gtk_text_buffer_set_text(buffer, "empty", 5);
+  
+  gtk_container_add(GTK_CONTAINER(window), vbox);
+
+  g_signal_connect(G_OBJECT(window), "destroy",
+        G_CALLBACK(gtk_main_quit), NULL);
+
+  gtk_widget_show_all(window);
+ 
+    SDL_Thread *thread;
+    thread = SDL_CreateThread(GTKThread, "GTKThread", (void *)NULL);
+    /* End of GTK NativeUI */
 
     ret = event_loop(options->display, options->control);
     LOGD("quit...");

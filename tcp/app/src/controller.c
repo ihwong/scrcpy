@@ -6,6 +6,8 @@
 #include "util/lock.h"
 #include "util/log.h"
 
+#include "scrcpy.h"
+
 bool
 controller_init(struct controller *controller, socket_t control_socket) {
     cbuf_init(&controller->queue);
@@ -66,6 +68,7 @@ process_msg(struct controller *controller,
         return false;
     }
     int w = net_send_all(controller->control_socket, serialized_msg, length);
+    gettimeofday(&eventSent, NULL);
     return w == length;
 }
 
