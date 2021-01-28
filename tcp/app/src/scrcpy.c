@@ -38,6 +38,7 @@
 #include <fcntl.h>
 
 #include <gtk/gtk.h>
+#include <poll.h>
 
 // static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
@@ -50,6 +51,7 @@ static struct controller controller;
 static struct file_handler file_handler;
 
 GtkTextBuffer *buffer;
+GtkWidget *button;
 
 static struct input_manager input_manager = {
     .controller = &controller,
@@ -305,30 +307,68 @@ av_log_callback(void *avcl, int level, const char *fmt, va_list vl) {
 
 static int
 GTKThread(void *ptr) {
+sleep(5);
+
+int rcvlen;
+int old_event = 1;
     LOGI("GTKThread starts here");
     for ( ; ; ) {
-        int rcvlen = recv(server.control_socket, mbuf, 37, 0);
+
+            rcvlen = recv(server.control_socket, mbuf, 40, 0);
+
+        if (rcvlen && (eventSent.tv_usec != old_event)) {
         gettimeofday(&dataReceived, NULL);
-        shouldPrint = 1;
-        if (lock2 == 0) {
-            lock = 1;
-            gtk_text_buffer_set_text(buffer, &mbuf[23], 1);
-            lock = 0;
+        /*
+        for (int i = 0; i < rcvlen; i++) {
+            if (mbuf[i] <32) {
+                LOGI("%c", 'x');
+            }
+            else {
+                LOGI("%c", mbuf[i]);
+            }
         }
+        */
+        // LOGE("%d", mbuf[23]);
+        shouldPrint = 1;
+        
+
+        
+
+            
+                        if (mbuf[23] == 99) {
+            gtk_button_set_label(button, "click");
+            LOGI("click");
+            }
+            else if (mbuf[23] == 104) {
+                        gtk_button_set_label(button, "here");
+                        LOGI("here");
+            }
+            else {
+            gtk_button_set_label(button, "default");
+            LOGI("default");
+            }
+            
+            old_event = eventSent.tv_usec;
+
+
+}
     }
     return 0;
 }
 
 static int
 GTKThread2(void *ptr) {
+sleep(5);
     LOGI("GTKThread2 starts here");
     for ( ; ; ) {
+         //   LOGI("DEBUG 33");
+
+           //         LOGI("DEBUG 44");
         if (lock == 0) {
-            lock2 = 1;
-            gtk_main_iteration_do(FALSE);
+                    gtk_main_iteration_do(TRUE);
             gettimeofday(&GtkRendered, NULL);
-            lock2 = 0;
-        }
+            // LOGI("show");
+       }
         if (shouldPrint) {
             FILE* fp = fopen("result.txt", "a");
             fprintf(fp, "e %ld\n", eventSent.tv_sec * 1000000 + eventSent.tv_usec);
@@ -501,9 +541,8 @@ scrcpy(const struct scrcpy_options *options) {
 
     input_manager.prefer_text = options->prefer_text;
     
-    /* GTK NativeUI */
+    /* GTK NativeUI Textview 
     GtkWidget *window;
-    GtkWidget *view;
     GtkWidget *vbox;
 
     gtk_init(NULL, NULL);
@@ -514,12 +553,12 @@ scrcpy(const struct scrcpy_options *options) {
     gtk_window_set_title(GTK_WINDOW(window), "NativeUI TextView");
 
     vbox = gtk_box_new(FALSE, 0);
-    view = gtk_text_view_new();
+    view = gtk_button_new();
     gtk_box_pack_start(GTK_BOX(vbox), view, TRUE, TRUE, 0);
 
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
+    // buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
 
-    gtk_text_buffer_set_text(buffer, "empty", 5);
+    gtk_button_set_label(view, "empty");
   
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
@@ -527,11 +566,33 @@ scrcpy(const struct scrcpy_options *options) {
         G_CALLBACK(gtk_main_quit), NULL);
 
     gtk_widget_show_all(window);
+*/
 
+  GtkWidget *window;
+
+  GtkWidget *button_box;
+    gtk_init(NULL, NULL);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Window");
+  gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
+
+  button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
+  gtk_container_add (GTK_CONTAINER (window), button_box);
+
+  button = gtk_button_new_with_label ("Hello World");
+  gtk_container_add (GTK_CONTAINER (button_box), button);
+
+  gtk_button_set_label(button, "qqqqqq");
+
+
+  gtk_widget_show_all (window);
+
+  
     SDL_Thread *thread;
     thread = SDL_CreateThread(GTKThread, "GTKThread", (void *)NULL);
     SDL_Thread *thread2;
     thread2 = SDL_CreateThread(GTKThread2, "GTKThread2", (void *)NULL);
+ 
     /* End of GTK NativeUI */
 
     ret = event_loop(options->display, options->control);
