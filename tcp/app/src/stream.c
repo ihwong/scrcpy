@@ -368,7 +368,7 @@ stream_init(struct stream *stream, socket_t msocket,
 
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("172.20.10.11");
+    server_addr.sin_addr.s_addr = inet_addr("192.168.1.13");
     server_addr.sin_port = htons(atoi("10000"));
 
     LOGI("video_socket connect() try\n");

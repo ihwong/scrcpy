@@ -39,7 +39,7 @@
 
 #include <gtk/gtk.h>
 
-static struct server server = SERVER_INITIALIZER;
+// static struct server server = SERVER_INITIALIZER;
 static struct screen screen = SCREEN_INITIALIZER;
 static struct fps_counter fps_counter;
 static struct video_buffer video_buffer;
@@ -298,40 +298,52 @@ av_log_callback(void *avcl, int level, const char *fmt, va_list vl) {
     SDL_free(local_fmt);
 }
 
+    char mbuf[1024];
+    
+    char lock = 0;
+    char lock2 = 0;
+
 static int
 GTKThread(void *ptr) {
     LOGI("GTKThread starts here");
-    char mbuf[1024];
     for ( ; ; ) {
-        
-        int rcvlen = recv(server.control_socket, mbuf, 100, 0);
-        if (rcvlen > 0) {
-            gettimeofday(&dataReceived, NULL);
-            LOGE("e %ld", eventSent.tv_sec * 1000000 + eventSent.tv_usec);
-            LOGE("d %ld", dataReceived.tv_sec * 1000000 + dataReceived.tv_usec);
-            /*
-            for (int i = 0; i < rcvlen; i++) {
-    	        if (mbuf[i] < 32) {
-    	            mbuf[i] = 'x';
-    	        }
-            }
-            mbuf[rcvlen] = '\0';
-            */
-            gtk_text_buffer_set_text(buffer, &mbuf[23], 1/*rcvlen*/);
-            gtk_main_iteration_do(FALSE);
-            gettimeofday(&GtkRendered, NULL);
-            LOGE("g %ld", GtkRendered.tv_sec * 1000000 + GtkRendered.tv_usec);
-            continue;
-        }
-        else {
-            gtk_main_iteration_do(FALSE);
+        int rcvlen = recv(server.control_socket, mbuf, 37, 0);
+        gettimeofday(&dataReceived, NULL);
+        shouldPrint = 1;
+        if (lock2 == 0) {
+            lock = 1;
+            gtk_text_buffer_set_text(buffer, &mbuf[23], 1);
+            lock = 0;
         }
     }
     return 0;
 }
 
+static int
+GTKThread2(void *ptr) {
+    LOGI("GTKThread2 starts here");
+    for ( ; ; ) {
+        if (lock == 0) {
+            lock2 = 1;
+            gtk_main_iteration_do(FALSE);
+            gettimeofday(&GtkRendered, NULL);
+            lock2 = 0;
+        }
+        if (shouldPrint) {
+            FILE* fp = fopen("result.txt", "a");
+            fprintf(fp, "e %ld\n", eventSent.tv_sec * 1000000 + eventSent.tv_usec);
+            fprintf(fp, "d %ld\n", dataReceived.tv_sec * 1000000 + dataReceived.tv_usec);
+            fprintf(fp, "g %ld\n", GtkRendered.tv_sec * 1000000 + GtkRendered.tv_usec);
+            fclose(fp);
+            shouldPrint = 0;
+        }
+    }    
+    return 0;
+}
+
 bool
 scrcpy(const struct scrcpy_options *options) {
+    shouldPrint = 0;
     bool record = !!options->record_filename;
     struct server_params params = {
         .log_level = options->log_level,
@@ -371,9 +383,11 @@ scrcpy(const struct scrcpy_options *options) {
         goto end;
     }
     
+    /* 
+     * for nativeui experiment, set socket to blocking
     int flag = fcntl(server.control_socket, F_GETFL, 0);
     fcntl(server.control_socket, F_SETFL, flag | O_NONBLOCK);
-
+    */
     char device_name[DEVICE_NAME_FIELD_LENGTH];
     struct size frame_size;
 
@@ -412,6 +426,8 @@ scrcpy(const struct scrcpy_options *options) {
    
 
     struct recorder *rec = NULL;
+    
+    /*
     if (record) {
         if (!recorder_init(&recorder,
                            options->record_filename,
@@ -422,6 +438,7 @@ scrcpy(const struct scrcpy_options *options) {
         rec = &recorder;
         recorder_initialized = true;
     }
+    */
 
     av_log_set_callback(av_log_callback);
 
@@ -485,34 +502,36 @@ scrcpy(const struct scrcpy_options *options) {
     input_manager.prefer_text = options->prefer_text;
     
     /* GTK NativeUI */
-  GtkWidget *window;
-  GtkWidget *view;
-  GtkWidget *vbox;
+    GtkWidget *window;
+    GtkWidget *view;
+    GtkWidget *vbox;
 
-  gtk_init(NULL, NULL);
+    gtk_init(NULL, NULL);
 
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-  gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
-  gtk_window_set_title(GTK_WINDOW(window), "NativeUI TextView");
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 400);
+    gtk_window_set_title(GTK_WINDOW(window), "NativeUI TextView");
 
-  vbox = gtk_box_new(FALSE, 0);
-  view = gtk_text_view_new();
-  gtk_box_pack_start(GTK_BOX(vbox), view, TRUE, TRUE, 0);
+    vbox = gtk_box_new(FALSE, 0);
+    view = gtk_text_view_new();
+    gtk_box_pack_start(GTK_BOX(vbox), view, TRUE, TRUE, 0);
 
-  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
 
-  gtk_text_buffer_set_text(buffer, "empty", 5);
+    gtk_text_buffer_set_text(buffer, "empty", 5);
   
-  gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-  g_signal_connect(G_OBJECT(window), "destroy",
+    g_signal_connect(G_OBJECT(window), "destroy",
         G_CALLBACK(gtk_main_quit), NULL);
 
-  gtk_widget_show_all(window);
- 
+    gtk_widget_show_all(window);
+
     SDL_Thread *thread;
     thread = SDL_CreateThread(GTKThread, "GTKThread", (void *)NULL);
+    SDL_Thread *thread2;
+    thread2 = SDL_CreateThread(GTKThread2, "GTKThread2", (void *)NULL);
     /* End of GTK NativeUI */
 
     ret = event_loop(options->display, options->control);

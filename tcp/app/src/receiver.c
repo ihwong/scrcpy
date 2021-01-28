@@ -8,6 +8,8 @@
 #include "util/lock.h"
 #include "util/log.h"
 
+#include "scrcpy.h"
+
 bool
 receiver_init(struct receiver *receiver, socket_t control_socket) {
     if (!(receiver->mutex = SDL_CreateMutex())) {
@@ -62,11 +64,19 @@ run_receiver(void *data) {
 
     unsigned char buf[DEVICE_MSG_SERIALIZED_MAX_SIZE];
     size_t head = 0;
+    char mbuf[1024];
+    
+    LOGI("run_receiver called");
 
     for (;;) {
+        // LOGI("RECEIVER THREAD IS RUNNING");
         assert(head < DEVICE_MSG_SERIALIZED_MAX_SIZE);
+        ssize_t r = 1;
+        /*
         ssize_t r = net_recv(receiver->control_socket, buf,
                              DEVICE_MSG_SERIALIZED_MAX_SIZE - head);
+                             */
+        
         if (r <= 0) {
             LOGD("Receiver stopped");
             break;

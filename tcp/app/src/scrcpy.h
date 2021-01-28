@@ -22,6 +22,10 @@ int magic_num;
 #include <sys/time.h>
 
 struct timeval eventSent, dataReceived, GtkRendered;
+int shouldPrint;
+
+#include "server.h"
+static struct server server = SERVER_INITIALIZER;
 /* NativeUI end */
 
 struct scrcpy_options {

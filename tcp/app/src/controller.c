@@ -68,7 +68,6 @@ process_msg(struct controller *controller,
         return false;
     }
     int w = net_send_all(controller->control_socket, serialized_msg, length);
-    gettimeofday(&eventSent, NULL);
     return w == length;
 }
 
@@ -112,6 +111,7 @@ controller_start(struct controller *controller) {
         LOGC("Could not start controller thread");
         return false;
     }
+
 
     if (!receiver_start(&controller->receiver)) {
         controller_stop(controller);
